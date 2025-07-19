@@ -22,7 +22,7 @@ services:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=codeigniter
     volumes:
-      - mysql_data:/var/lib/mysql
+      - ./db:/var/lib/mysql
     ports:
       - "3306:3306"
 
@@ -37,6 +37,3 @@ services:
       - PMA_USER=root         
       - PMA_PASSWORD=root     
     restart: always
-
-volumes:
-  mysql_data:

@@ -234,7 +234,7 @@
         <!-- Sección del usuario -->
         <div class="user-profile">
             <div class="user-info">
-                <div class="user-name"><?= esc($nombre) ?></div>
+                
                 <div class="user-type">Cuenta Turista</div>
             </div>
         </div>
