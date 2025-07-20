@@ -16,7 +16,7 @@ class Comunidad extends BaseController
             return redirect()->to('/login');
         }
 
-        return view('comunidad_menu');
+        return view('comunidad/comunidad_menu');
     }
 
     public function crearExperiencia()
@@ -27,7 +27,7 @@ class Comunidad extends BaseController
             return redirect()->to('/login');
         }
 
-        return view('comunidad_crear_experiencia');
+        return view('comunidad/comunidad_crear_experiencia');
     }
 
     public function guardarExperiencia()
@@ -56,7 +56,7 @@ class Comunidad extends BaseController
         ]);
 
         if (!$validation->withRequest($this->request)->run()) {
-            return view('comunidad_crear_experiencia', ['validation' => $validation]);
+            return view('comunidad/comunidad_crear_experiencia', ['validation' => $validation]);
         }
 
         $expModel = new ExperienciaModel();
@@ -107,7 +107,7 @@ class Comunidad extends BaseController
         $model = new \App\Models\ExperienciaModel();
         $experiencias = $model->where('id_comunidad', session()->get('id_usuario'))->findAll();
 
-        return view('comunidad_gestionar_experiencias', ['experiencias' => $experiencias]);
+        return view('comunidad/comunidad_gestionar_experiencias', ['experiencias' => $experiencias]);
     }
 
     public function actualizarExperiencia()

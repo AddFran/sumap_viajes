@@ -37,7 +37,7 @@ class Turista extends BaseController
             $exp['imagen'] = $img['ruta_imagen'] ?? null;
         }
 
-        return view('turista_menu', [
+        return view('turista/turista_menu', [
             'nombre' => $session->get('nombre'),
             'experiencias' => $experiencias,
             'categorias' => $categorias
@@ -61,7 +61,7 @@ class Turista extends BaseController
 
         $imagenes = $imgModel->where('id_experiencia', $id)->findAll();
 
-        return view('turista_ver_experiencia', [
+        return view('turista/turista_ver_experiencia', [
             'experiencia' => $experiencia,
             'imagenes' => $imagenes
         ]);
@@ -150,7 +150,11 @@ class Turista extends BaseController
             $res['pago'] = $res['id_pago'] ? $pagoModel->find($res['id_pago']) : null;
         }
 
-        return view('turista_reservas', ['reservas' => $reservas]);
+        // Pasar el nombre del usuario logueado a la vista
+        return view('turista/turista_reservas', [
+            'reservas' => $reservas,
+            'nombre' => $session->get('nombre') // Aquí pasas la variable nombre a la vista
+        ]);
     }
 
     public function guardarValoracion()

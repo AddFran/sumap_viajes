@@ -27,7 +27,7 @@ class AdministradorController extends Controller
             return redirect()->to('/login');  // Redirigir al login si no es administrador
         }
 
-        return view('administrador_menu');
+        return view('administrador/administrador_menu');
     }
 
     // Controlador: AdministradorController.php
