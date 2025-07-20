@@ -56,6 +56,10 @@
             gap: 15px;
         }
 
+        .text-muted {
+            color: #6c757d !important;
+        }
+
         /* Contenido principal */
         .main-content {
             padding: 30px;
@@ -190,6 +194,85 @@
         .payment-method {
             display: none;
         }
+         
+        .valoraciones {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+        }
+
+        .valoraciones h3 {
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary-light);
+        }
+
+        .valoraciones-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .valoracion-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 3px solid var(--primary-light);
+        }
+
+        .valoracion-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .valoracion-comment {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Sistema de estrellas fraccionarias mejorado */
+        .star-rating-container {
+            display: inline-flex;
+            position: relative;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+        }
+
+        .star-rating-background {
+            color: #ccc;
+            display: inline-flex;
+        }
+
+        .star-rating-foreground {
+            color: gold;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            display: inline-flex;
+        }
+
+        .star-fraction {
+            position: relative;
+            width: 1em;
+        }
+
+        .star-fraction .filled {
+            position: absolute;
+            left: 0;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .star-fraction .filled-partial {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            clip-path: inset(0 0 0 0); /* Esto se ajustará dinámicamente */
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -234,12 +317,11 @@
         <!-- Sección del usuario -->
         <div class="user-profile">
             <div class="user-info">
-                
+                <div class="user-name"><?= esc($nombre) ?></div>
                 <div class="user-type">Cuenta Turista</div>
             </div>
         </div>
 
-        <!-- Nueva sección de enlaces alineados a la derecha -->
         <div class="admin-navigation ms-auto">
             <a href="<?= base_url('/turista/menu') ?>" class="btn btn-outline-light btn-sm">
                 <i class="bi bi-house-door"></i> Menú
@@ -286,16 +368,102 @@
                 </div>
             </div>
 
+            <div class="experience-rating">
+                <h4>Promedio calificación</h4>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="star-rating-container">
+                        <div class="star-rating-background">
+                            <?php for ($i = 0; $i < 5; $i++): ?>
+                                <i class="bi bi-star-fill"></i>
+                            <?php endfor; ?>
+                        </div>
+
+                        <div class="star-rating-foreground">
+                            <?php
+                            $fullStars = floor($promedio);
+                            $fraction = $promedio - $fullStars;
+                            
+                            for ($i = 0; $i < $fullStars; $i++): ?>
+                                <i class="bi bi-star-fill"></i>
+                            <?php endfor; ?>
+                            
+
+                            <?php if ($fraction > 0 && $fullStars < 5): ?>
+                                <div class="star-fraction">
+                                    <div class="filled" style="width: <?= $fraction * 100 ?>%">
+                                        <i class="bi bi-star-fill"></i>
+                                    </div>
+                                    <i class="bi bi-star-fill" style="color: #ccc"></i>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <span class="average-rating ms-2"><?= number_format($promedio, 1) ?> de 5</span>
+                </div>
+                <p class="text-muted">Basado en <?= count($valoraciones) ?> valoraciones</p>
+            </div>
+
             <div class="gallery-container">
                 <h3 class="gallery-title">Galería de Imágenes</h3>
-                
+
                 <?php if (empty($imagenes)): ?>
                     <p class="no-images">No hay imágenes disponibles</p>
                 <?php else: ?>
                     <div class="gallery-grid">
                         <?php foreach ($imagenes as $img): ?>
-                            <img src="<?= base_url($img['ruta_imagen']) ?>" alt="Imagen experiencia" class="gallery-img">
+                            <img src="<?= base_url($img['ruta_imagen']) ?>" alt="Imagen experiencia" class="gallery-img" 
+                                data-bs-toggle="modal" data-bs-target="#imageModal"
+                                onclick="mostrarImagen('<?= base_url($img['ruta_imagen']) ?>')">
                         <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+
+            <div class="valoraciones">
+                <h3>Valoraciones de usuarios</h3>
+                <?php if (count($valoraciones) > 0): ?>
+                    <ul class="valoraciones-list">
+                        <?php foreach ($valoraciones as $valoracion): ?>
+                            <li class="valoracion-item">
+                                <div class="valoracion-header">
+                                    <strong><?= esc($valoracion['nombre']) ?></strong>
+                                    <div class="star-rating-container">
+                                        <div class="star-rating-background">
+                                            <?php for ($i = 0; $i < 5; $i++): ?>
+                                                <i class="bi bi-star-fill"></i>
+                                            <?php endfor; ?>
+                                        </div>
+                                        <div class="star-rating-foreground">
+                                            <?php
+                                            $fullStars = floor($valoracion['calificacion']);
+                                            $fraction = $valoracion['calificacion'] - $fullStars;
+                                            
+                                            for ($i = 0; $i < $fullStars; $i++): ?>
+                                                <i class="bi bi-star-fill"></i>
+                                            <?php endfor; ?>
+                                            
+                                            <?php if ($fraction > 0 && $fullStars < 5): ?>
+                                                <div class="star-fraction">
+                                                    <div class="filled" style="width: <?= $fraction * 100 ?>%">
+                                                        <i class="bi bi-star-fill"></i>
+                                                    </div>
+                                                    <i class="bi bi-star-fill" style="color: #ccc"></i>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="valoracion-comment">
+                                    <p><?= esc($valoracion['comentario']) ?></p>
+                                    <small class="text-muted"><?= date('d/m/Y', strtotime($valoracion['fecha_valoracion'])) ?></small>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <div class="alert alert-secondary">
+                        Esta experiencia aún no tiene valoraciones.
                     </div>
                 <?php endif; ?>
             </div>
@@ -311,7 +479,16 @@
         </div>
     </main>
 
-    <!-- Modal de Reserva -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-transparent border-0">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                <img id="modalImage" src="" alt="Imagen ampliada" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+
+
     <div class="modal fade" id="modalReserva" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -347,7 +524,6 @@
         </div>
     </div>
 
-    <!-- Modal de Pago -->
     <div class="modal fade" id="modalPago" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -414,6 +590,11 @@
     <script>
         const modalReserva = new bootstrap.Modal(document.getElementById('modalReserva'));
         const modalPago = new bootstrap.Modal(document.getElementById('modalPago'));
+
+        function mostrarImagen(url) {
+            // Cambia la fuente de la imagen en el modal
+            document.getElementById('modalImage').src = url;
+        }
 
         function abrirReserva() {
             modalReserva.show();

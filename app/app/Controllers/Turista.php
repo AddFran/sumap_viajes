@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\UsuarioModel;
 use App\Models\ExperienciaModel;
 use App\Models\ImagenModel;
 use App\Models\ReservaModel;
@@ -24,12 +25,19 @@ class Turista extends BaseController
         $catModel = new CategoriaReporteModel();
         $categorias = $catModel->where('activo', true)->findAll();
 
-        // 5 experiencias aleatorias aprobadas
-        $experiencias = $expModel
-            ->where('estado', 'Aprobada')
-            ->orderBy('RAND()') // RAND() funciona en MySQL
-            ->limit(5)
-            ->findAll();
+        // Obtener el término de búsqueda si existe
+        $searchTerm = $this->request->getGet('search');
+
+        // Consulta base
+        $expModel->where('estado', 'Aprobada');
+
+        // Aplicar filtro de búsqueda si existe
+        if (!empty($searchTerm)) {
+            $expModel->like('titulo', $searchTerm);
+        }
+
+        // Obtener experiencias (limitamos a 20 para no sobrecargar)
+        $experiencias = $expModel->orderBy('RAND()')->findAll(20);
 
         // Añadir imagen a cada experiencia
         foreach ($experiencias as &$exp) {
@@ -40,7 +48,8 @@ class Turista extends BaseController
         return view('turista/turista_menu', [
             'nombre' => $session->get('nombre'),
             'experiencias' => $experiencias,
-            'categorias' => $categorias
+            'categorias' => $categorias,
+            'searchTerm' => $searchTerm // Pasamos el término de búsqueda a la vista
         ]);
     }
 
@@ -53,19 +62,47 @@ class Turista extends BaseController
 
         $expModel = new \App\Models\ExperienciaModel();
         $imgModel = new \App\Models\ImagenModel();
+        $usuarioModel = new \App\Models\UsuarioModel(); // Cargar el modelo de usuarios
 
+        // Obtener la experiencia
         $experiencia = $expModel->find($id);
         if (!$experiencia || $experiencia['estado'] !== 'Aprobada') {
             return redirect()->to('/turista/menu')->with('error', 'La experiencia no existe o no está aprobada.');
         }
 
+        // Obtener imágenes de la experiencia
         $imagenes = $imgModel->where('id_experiencia', $id)->findAll();
 
+        // Obtener las valoraciones (solo con id_usuario y calificacion)
+        $valoracionModel = new \App\Models\ValoracionModel();
+        $valoraciones = $valoracionModel->where('id_experiencia', $id)->findAll();
+
+        // Añadir el nombre del usuario a cada valoración
+        foreach ($valoraciones as &$valoracion) {
+            $usuario = $usuarioModel->find($valoracion['id_usuario']);
+            $valoracion['nombre'] = $usuario['nombre']; // Añadir el nombre del usuario a la valoración
+        }
+
+        // Calcular el promedio de valoraciones
+        $promedio = 0;
+        $cantidadValoraciones = count($valoraciones);
+
+        if ($cantidadValoraciones > 0) {
+            $totalCalificaciones = array_sum(array_column($valoraciones, 'calificacion'));
+            $promedio = round($totalCalificaciones / $cantidadValoraciones, 1); // Promedio con un decimal
+        }
+
+        // Pasar todos los datos a la vista
         return view('turista/turista_ver_experiencia', [
             'experiencia' => $experiencia,
-            'imagenes' => $imagenes
+            'imagenes' => $imagenes,
+            'promedio' => $promedio,
+            'valoraciones' => $valoraciones,
+            'nombre' => $session->get('nombre')
         ]);
     }
+
+
 
     public function guardarReserva()
     {
@@ -150,10 +187,9 @@ class Turista extends BaseController
             $res['pago'] = $res['id_pago'] ? $pagoModel->find($res['id_pago']) : null;
         }
 
-        // Pasar el nombre del usuario logueado a la vista
         return view('turista/turista_reservas', [
             'reservas' => $reservas,
-            'nombre' => $session->get('nombre') // Aquí pasas la variable nombre a la vista
+            'nombre' => $session->get('nombre')
         ]);
     }
 
