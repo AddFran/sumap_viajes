@@ -44,6 +44,7 @@ class Registro extends BaseController
             'foto_perfil' => 'uploads/perfiles/' . $nombreImagen,
         ]);
 
+        session()->setFlashdata('success', '¡Registro exitoso! Ahora puedes iniciar sesión.');
         return redirect()->to('/login');
     }
 }

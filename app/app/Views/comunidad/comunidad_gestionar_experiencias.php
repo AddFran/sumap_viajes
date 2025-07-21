@@ -267,6 +267,7 @@
                                     <th>Descripción</th>
                                     <th>Fechas</th>
                                     <th>Precio</th>
+                                    <th>Cupos</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -283,6 +284,7 @@
                                             </small>
                                         </td>
                                         <td>S/ <?= number_format($exp['precio'], 2) ?></td>
+                                        <td><?= esc($exp['cupos']) ?></td>
                                         <td>
                                             <span class="badge <?= $exp['estado'] == 'Activo' ? 'bg-success' : 'bg-warning' ?>">
                                                 <?= esc($exp['estado']) ?>
@@ -332,15 +334,19 @@
                     <div class="modal-body">
                         <input type="hidden" name="id_experiencia" id="id_experiencia">
 
+
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label class="form-label">Título</label>
                                 <input type="text" name="titulo" id="titulo" class="form-control" required>
                             </div>
-
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label class="form-label">Precio (S/)</label>
                                 <input type="number" step="0.01" name="precio" id="precio" class="form-control" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Cupos</label>
+                                <input type="number" min="1" max="9999" name="cupos" id="cupos" class="form-control" required pattern="\\d+" title="Ingrese un número de cupos válido (mínimo 1)" oninvalid="this.setCustomValidity('Ingrese un número de cupos válido (mínimo 1)')" oninput="setCustomValidity('')">
                             </div>
                         </div>
 
@@ -393,6 +399,7 @@
             document.getElementById('fecha_inicio').value = exp.fecha_inicio;
             document.getElementById('fecha_fin').value = exp.fecha_fin;
             document.getElementById('precio').value = exp.precio;
+            document.getElementById('cupos').value = exp.cupos;
             document.getElementById('estado').value = exp.estado;
 
             modalEditar.show();

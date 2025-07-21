@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   web:
@@ -24,14 +24,14 @@ services:
     volumes:
       - ./db:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - "3307:3307"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     depends_on:
       - db
     ports:
-      - "8081:80"
+      - "8082:80"
     environment:
       - PMA_HOST=db           
       - PMA_USER=root         

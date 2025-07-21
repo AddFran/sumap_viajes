@@ -70,7 +70,7 @@ class Comunidad extends BaseController
             'fecha_fin' => $this->request->getPost('fecha_fin'),
             'precio' => $this->request->getPost('precio'),
             'estado' => 'Pendiente',
-            'cupo_maximo' => 100,
+            'cupo_maximo' => $this->request->getPost('cupos'),
         ], true); // 'true' devuelve el ID insertado
 
         $imagenes = $this->request->getFiles()['imagenes'];
@@ -124,6 +124,7 @@ class Comunidad extends BaseController
             'fecha_inicio' => $this->request->getPost('fecha_inicio'),
             'fecha_fin' => $this->request->getPost('fecha_fin'),
             'precio' => $this->request->getPost('precio'),
+            'cupo_maximo' => $this->request->getPost('cupos'),
         ];
 
         $idExperiencia = $this->request->getPost('id_experiencia');

@@ -246,6 +246,12 @@
                 <h2 class="register-title"> </h2>
                 <h2 class="register-title">Crear Cuenta</h2>
                 
+                <!-- Mensaje de éxito -->
+                <?php if (session()->getFlashdata('success')): ?>
+                    <div class="alert alert-success" role="alert">
+                        <?= session()->getFlashdata('success') ?>
+                    </div>
+                <?php endif; ?>
                 <!-- Mensaje de error -->
                 <?php if (isset($validation)): ?>
                     <div class="register-error">

@@ -362,8 +362,8 @@
                     </div>
                     
                     <div class="detail-item">
-                        <span class="detail-label">Cupo máximo:</span>
-                        <p><?= esc($experiencia['cupo_maximo']) ?></p>
+                        <span class="detail-label">Cupos disponibles:</span>
+                        <p><?= esc($experiencia['cupos']) ?></p>
                     </div>
                 </div>
             </div>

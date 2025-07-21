@@ -34,7 +34,7 @@ use CodeIgniter\Router\RouteCollection;
 
 
 //$routes->setAutoRoute(true);
-$routes->get('/', 'Home::index');
+$routes->get('/', 'Auth::login');
 $routes->get('prueba', 'Prueba::index');
 $routes->get('prueba2', 'Prueba2::index');
 
