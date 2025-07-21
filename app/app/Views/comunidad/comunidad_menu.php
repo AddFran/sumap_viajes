@@ -262,6 +262,25 @@
                 </div>
             </div>
         </div>
+            <!-- Tarjeta Ver Reservas -->
+<div class="col-md-6">
+    <div class="feature-card bg-primary-dark p-4 rounded-3 h-100">
+        <div class="d-flex align-items-center mb-3">
+            <div class="feature-icon bg-primary-light rounded-circle p-3 me-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0-0.001-6.001A3 3 0 0 0 8 8z"/>
+                </svg>
+            </div>
+            <h3 class="mb-0">Ver Reservas</h3>
+        </div>
+        <p class="text-muted">Consulta las reservas realizadas por turistas y su estado.</p>
+        <a href="<?= base_url('comunidad/ver-reservas') ?>" class="btn btn-light mt-2 w-100">
+            Acceder <i class="bi bi-arrow-right ms-2"></i>
+        </a>
+    </div>
+</div>
+
+
 
         <!-- Sección de bienvenida -->
         <div class="welcome-card mt-4 p-4 rounded-3" style="background: rgba(28, 135, 255, 0.1); border-left: 4px solid var(--primary-light);">

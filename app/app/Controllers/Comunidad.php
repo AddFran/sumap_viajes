@@ -161,4 +161,26 @@ class Comunidad extends BaseController
 
         return view('imagen_prueba', ['imagenes' => $imagenes]);
     }
+
+    public function verReservas()
+{
+    if (!session()->get('logged_in') || session()->get('tipo_cuenta') !== 'Comunidad') {
+        return redirect()->to('/login');
+    }
+
+    $id_comunidad = session()->get('id_usuario');
+
+    $db = \Config\Database::connect();
+    $builder = $db->table('reserva r');
+    $builder->select('r.estado_reserva, r.fecha_reserva, u.nombre AS turista, e.titulo AS experiencia');
+    $builder->join('experiencia e', 'r.id_experiencia = e.id_experiencia');
+    $builder->join('usuario u', 'r.id_usuario = u.id_usuario');
+    $builder->where('e.id_comunidad', $id_comunidad);
+    $builder->orderBy('r.fecha_reserva', 'DESC');
+
+    $reservas = $builder->get()->getResultArray();
+
+    return view('comunidad/comunidad_reservas', ['reservas' => $reservas]);
+}
+
 }

@@ -52,6 +52,7 @@ $routes->post('comunidad/guardar-experiencia', 'Comunidad::guardarExperiencia');
 $routes->get('comunidad/gestionar-experiencias', 'Comunidad::gestionarExperiencias');
 $routes->post('comunidad/actualizar-experiencia', 'Comunidad::actualizarExperiencia');
 $routes->post('comunidad/eliminar-experiencia', 'Comunidad::eliminarExperiencia');
+$routes->get('comunidad/ver-reservas', 'Comunidad::verReservas');
 
 $routes->get('comunidad/imagen-prueba', 'Comunidad::imagenPrueba'); // WEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 
