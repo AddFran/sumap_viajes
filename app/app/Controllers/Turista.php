@@ -104,67 +104,94 @@ class Turista extends BaseController
 
 
 
-    public function guardarReserva()
-    {
-        $session = session();
+public function guardarReserva()
+{
+    $session = session();
 
-        if (!$session->get('logged_in') || $session->get('tipo_cuenta') !== 'Turista') {
-            return redirect()->to('/login');
-        }
-
-        $id_usuario = $session->get('id_usuario');
-        $id_experiencia = $this->request->getPost('id_experiencia');
-        $numero_personas = $this->request->getPost('numero_personas');
-        $precio_unitario = $this->request->getPost('precio_unitario');
-
-        $monto_total = $numero_personas * $precio_unitario;
-
-        $reservaModel = new ReservaModel();
-
-        $reservaModel->insert([
-            'id_usuario' => $id_usuario,
-            'id_experiencia' => $id_experiencia,
-            'numero_personas' => $numero_personas,
-            'monto_total' => $monto_total,
-            'estado_reserva' => 'Pendiente',
-        ]);
-
-        return redirect()->to('/turista/menu')->with('mensaje', 'Reserva realizada con éxito.');
+    if (!$session->get('logged_in') || $session->get('tipo_cuenta') !== 'Turista') {
+        return redirect()->to('/login');
     }
 
-    public function confirmarPago()
-    {
-        $session = session();
+    $id_usuario = $session->get('id_usuario');
+    $id_experiencia = $this->request->getPost('id_experiencia');
+    $numero_personas = $this->request->getPost('numero_personas');
+    $precio_unitario = $this->request->getPost('precio_unitario');
 
-        if (!$session->get('logged_in') || $session->get('tipo_cuenta') !== 'Turista') {
-            return redirect()->to('/login');
-        }
+    $monto_total = $numero_personas * $precio_unitario;
 
-        $metodo = $this->request->getPost('metodo_pago');
-        $monto = $this->request->getPost('monto');
-        $id_experiencia = $this->request->getPost('id_experiencia');
-        $numero_personas = $this->request->getPost('numero_personas');
+    $reservaModel = new ReservaModel();
+    $experienciaModel = new ExperienciaModel();
 
-        $pagoModel = new PagoModel();
-        $reservaModel = new ReservaModel();
+    $experiencia = $experienciaModel->find($id_experiencia);
 
-        $id_pago = $pagoModel->insert([
-            'monto' => $monto,
-            'metodo_pago' => $metodo,
-            'estado_pago' => 'completado'
-        ], true); // devuelve id_pago
-
-        $reservaModel->insert([
-            'id_usuario' => $session->get('id_usuario'),
-            'id_experiencia' => $id_experiencia,
-            'id_pago' => $id_pago,
-            'numero_personas' => $numero_personas,
-            'monto_total' => $monto,
-            'estado_reserva' => 'Confirmada'
-        ]);
-
-        return redirect()->to('/turista/menu')->with('mensaje', 'Reserva y pago registrados correctamente.');
+    if (!$experiencia || $experiencia['cupo_maximo'] < $numero_personas) {
+        return redirect()->back()->with('error', 'No hay suficiente cupo disponible.');
     }
+
+    // Insertar la reserva
+    $reservaModel->insert([
+        'id_usuario' => $id_usuario,
+        'id_experiencia' => $id_experiencia,
+        'numero_personas' => $numero_personas,
+        'monto_total' => $monto_total,
+        'estado_reserva' => 'Pendiente',
+    ]);
+
+    // Actualizar el cupo
+    $nuevoCupo = $experiencia['cupo_maximo'] - $numero_personas;
+    $experienciaModel->update($id_experiencia, ['cupo_maximo' => $nuevoCupo]);
+
+    return redirect()->to('/turista/menu')->with('mensaje', 'Reserva realizada con éxito.');
+}
+
+
+
+   public function confirmarPago()
+{
+    $session = session();
+
+    if (!$session->get('logged_in') || $session->get('tipo_cuenta') !== 'Turista') {
+        return redirect()->to('/login');
+    }
+
+    $metodo = $this->request->getPost('metodo_pago');
+    $monto = $this->request->getPost('monto');
+    $id_experiencia = $this->request->getPost('id_experiencia');
+    $numero_personas = $this->request->getPost('numero_personas');
+
+    $pagoModel = new PagoModel();
+    $reservaModel = new ReservaModel();
+    $experienciaModel = new ExperienciaModel();
+
+    $experiencia = $experienciaModel->find($id_experiencia);
+
+    if (!$experiencia || $experiencia['cupo_maximo'] < $numero_personas) {
+        return redirect()->back()->with('error', 'No hay suficiente cupo disponible.');
+    }
+
+    // Crear pago
+    $id_pago = $pagoModel->insert([
+        'monto' => $monto,
+        'metodo_pago' => $metodo,
+        'estado_pago' => 'completado'
+    ], true);
+
+    // Crear reserva
+    $reservaModel->insert([
+        'id_usuario' => $session->get('id_usuario'),
+        'id_experiencia' => $id_experiencia,
+        'id_pago' => $id_pago,
+        'numero_personas' => $numero_personas,
+        'monto_total' => $monto,
+        'estado_reserva' => 'Confirmada'
+    ]);
+
+    // Actualizar cupo
+    $nuevoCupo = $experiencia['cupo_maximo'] - $numero_personas;
+    $experienciaModel->update($id_experiencia, ['cupo_maximo' => $nuevoCupo]);
+
+    return redirect()->to('/turista/menu')->with('mensaje', 'Reserva y pago registrados correctamente.');
+}
 
     public function reservas()
     {
