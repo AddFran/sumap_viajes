@@ -69,6 +69,12 @@ class Turista extends BaseController
         if (!$experiencia || $experiencia['estado'] !== 'Aprobada') {
             return redirect()->to('/turista/menu')->with('error', 'La experiencia no existe o no está aprobada.');
         }
+        // Mapear cupo_maximo a cupos para la vista
+        if (isset($experiencia['cupo_maximo'])) {
+            $experiencia['cupos'] = $experiencia['cupo_maximo'];
+        } else {
+            $experiencia['cupos'] = 0;
+        }
 
         // Obtener imágenes de la experiencia
         $imagenes = $imgModel->where('id_experiencia', $id)->findAll();
