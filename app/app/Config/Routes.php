@@ -88,3 +88,6 @@ $routes->post('admin/evaluar_reporte', 'AdminController::evaluar_reporte_ajax');
 $routes->get('admin/editar_usuario/(:num)', 'AdministradorController::editar_usuario/$1');  // Editar usuario
 $routes->post('admin/actualizar_usuario', 'AdministradorController::actualizar_usuario');    // Actualizar usuario
 $routes->post('admin/eliminar_usuario/(:num)', 'AdministradorController::eliminar_usuario/$1');  // Eliminar usuario
+
+$routes->get('/admin/estadisticas', 'AdministradorController::ver_estadisticas');
+

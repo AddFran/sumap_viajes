@@ -4,6 +4,7 @@ namespace App\Controllers;
 use App\Models\ExperienciaModel;
 use App\Models\ReporteModel;
 use App\Models\UsuarioModel;
+use App\Models\ReservaModel;
 use CodeIgniter\Controller;
 
 class AdministradorController extends Controller
@@ -17,6 +18,7 @@ class AdministradorController extends Controller
         $this->experienciaModel = new ExperienciaModel();
         $this->reporteModel = new ReporteModel();
         $this->usuarioModel = new UsuarioModel();
+        $this->reservaModel = new ReservaModel();
     }
 
     // Menú principal del administrador
@@ -267,36 +269,68 @@ class AdministradorController extends Controller
     }
 
     public function ver_usuarios()
-{
-    // Verificar si el usuario está autenticado y es un administrador
-    if (!session()->get('logged_in') || session()->get('tipo_cuenta') != 'Admin') {
-        return redirect()->to('/login');
+    {
+        // Verificar si el usuario está autenticado y es un administrador
+        if (!session()->get('logged_in') || session()->get('tipo_cuenta') != 'Admin') {
+            return redirect()->to('/login');
+        }
+
+        // Obtener el término de búsqueda si existe
+        $searchTerm = $this->request->getGet('search');
+
+        // Configurar la paginación
+        $perPage = 10; // Número de usuarios por página
+
+        // Consulta base con paginación
+        $query = $this->usuarioModel;
+
+        // Aplicar filtro de búsqueda si existe
+        if (!empty($searchTerm)) {
+            $query->groupStart()
+                ->like('nombre', $searchTerm)
+                ->orLike('correo', $searchTerm)
+                ->orLike('tipo_cuenta', $searchTerm)
+                ->groupEnd();
+        }
+
+        // Obtener usuarios paginados
+        $data['usuarios'] = $query->orderBy('nombre', 'ASC')->paginate($perPage);
+        $data['pager'] = $this->usuarioModel->pager;
+        $data['searchTerm'] = $searchTerm;
+
+        return view('administrador/ver_usuarios', $data);
     }
 
-    // Obtener el término de búsqueda si existe
-    $searchTerm = $this->request->getGet('search');
+    // Ver estadísticas
+    public function ver_estadisticas()
+    {
+        // Verificar si el usuario está autenticado y es un administrador
+        if (!session()->get('logged_in') || session()->get('tipo_cuenta') != 'Admin') {
+            return redirect()->to('/login');
+        }
 
-    // Configurar la paginación
-    $perPage = 10; // Número de usuarios por página
+        // Obtener estadísticas generales
+        $data['usuariosRegistrados'] = $this->usuarioModel->countAll(); // Total de usuarios
+        $data['experienciasAprobadas'] = $this->experienciaModel->where('estado', 'Aprobada')->countAllResults(); // Total de experiencias aprobadas
+        $data['reservasRealizadas'] = $this->reservaModel->countAll(); // Total de reservas realizadas
 
-    // Consulta base con paginación
-    $query = $this->usuarioModel;
+        // Estadísticas diarias (por ejemplo, reservas por día)
+        $data['reservasPorDia'] = $this->getReservasPorDia();
 
-    // Aplicar filtro de búsqueda si existe
-    if (!empty($searchTerm)) {
-        $query->groupStart()
-              ->like('nombre', $searchTerm)
-              ->orLike('correo', $searchTerm)
-              ->orLike('tipo_cuenta', $searchTerm)
-              ->groupEnd();
+        // Pasar los datos a la vista
+        return view('administrador/ver_estadisticas', $data);
     }
 
-    // Obtener usuarios paginados
-    $data['usuarios'] = $query->orderBy('nombre', 'ASC')->paginate($perPage);
-    $data['pager'] = $this->usuarioModel->pager;
-    $data['searchTerm'] = $searchTerm;
 
-    return view('administrador/ver_usuarios', $data);
-}
+    // Obtener reservas realizadas por día
+    public function getReservasPorDia()
+    {
+        $builder = $this->reservaModel->builder();
+        $builder->select('DATE(fecha_reserva) AS fecha, COUNT(id_reserva) AS total')
+            ->groupBy('DATE(fecha_reserva)')
+            ->orderBy('fecha', 'ASC');
+        return $builder->get()->getResultArray();
+    }
+
 }
 
