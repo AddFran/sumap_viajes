@@ -251,30 +251,43 @@ public function guardarReserva()
         }
     }
 
-    public function cancelarReserva()
-    {
-        $session = session();
-        if (!$session->get('logged_in') || $session->get('tipo_cuenta') !== 'Turista') {
-            return redirect()->to('/login');
-        }
-
-        $id_reserva = $this->request->getPost('id_reserva');
-        $motivo = $this->request->getPost('motivo_cancelacion');
-
-        $reservaModel = new \App\Models\ReservaModel();
-        $reserva = $reservaModel->find($id_reserva);
-
-        if (!$reserva || $reserva['id_usuario'] != $session->get('id_usuario')) {
-            return redirect()->to('/turista/reservas')->with('error', 'Reserva no válida.');
-        }
-
-        $reservaModel->update($id_reserva, [
-            'estado_reserva' => 'Cancelada',
-            'motivo_cancelacion' => $motivo
-        ]);
-
-        return redirect()->to('/turista/reservas')->with('mensaje', 'Reserva cancelada correctamente.');
+   public function cancelarReserva()
+{
+    $session = session();
+    if (!$session->get('logged_in') || $session->get('tipo_cuenta') !== 'Turista') {
+        return redirect()->to('/login');
     }
+
+    $id_reserva = $this->request->getPost('id_reserva');
+    $motivo = $this->request->getPost('motivo_cancelacion');
+
+    $reservaModel = new \App\Models\ReservaModel();
+    $experienciaModel = new \App\Models\ExperienciaModel();
+
+    $reserva = $reservaModel->find($id_reserva);
+
+    if (!$reserva || $reserva['id_usuario'] != $session->get('id_usuario')) {
+        return redirect()->to('/turista/reservas')->with('error', 'Reserva no válida.');
+    }
+
+    // Actualizar estado a Cancelada
+    $reservaModel->update($id_reserva, [
+        'estado_reserva' => 'Cancelada',
+        'motivo_cancelacion' => $motivo
+    ]);
+
+    // Recuperar los cupos a la experiencia
+    $experiencia = $experienciaModel->find($reserva['id_experiencia']);
+    if ($experiencia) {
+        $nuevoCupo = $experiencia['cupo_maximo'] + $reserva['numero_personas'];
+        $experienciaModel->update($experiencia['id_experiencia'], [
+            'cupo_maximo' => $nuevoCupo
+        ]);
+    }
+
+    return redirect()->to('/turista/reservas')->with('mensaje', 'Reserva cancelada correctamente y cupos actualizados.');
+}
+
 
     public function reportar()
     {
