@@ -103,6 +103,10 @@
             border-radius: 3px;
         }
 
+        .text-muted {
+            color: #6c757d !important;
+        }
+
         /* Tarjetas de experiencia */
         .experiencia-card {
             background: var(--card-bg);
@@ -199,6 +203,74 @@
             margin-top: 30px;
         }
 
+        .search-container {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .search-input-group {
+            display: flex;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .search-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-light);
+            padding: 12px 20px;
+            padding-left: 45px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(28, 135, 255, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            pointer-events: none;
+        }
+
+        .search-btn {
+            background: var(--primary-light);
+            border: none;
+            color: white;
+            padding: 0 20px;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-base);
+        }
+
+        .no-experiences-alert {
+            background: rgba(10, 25, 47, 0.8);
+            border: 1px solid var(--primary-light);
+            color: var(--text-light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .no-experiences-alert i {
+            font-size: 2rem;
+            color: var(--primary-light);
+            margin-bottom: 10px;
+            display: block;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .main-header {
@@ -246,7 +318,6 @@
             </div>
         </div>
 
-        <!-- Nueva sección de enlaces alineados a la derecha -->
         <div class="admin-navigation ms-auto">
             <a href="<?= base_url('/turista/menu') ?>" class="btn btn-outline-light btn-sm">
                 <i class="bi bi-house-door"></i> Menú
@@ -257,16 +328,29 @@
         </div>
     </header>
 
-    <!-- Contenido principal -->
     <main class="main-content">
         <div class="welcome-card">
             <h1 class="welcome-title">¡Bienvenido, <?= esc($nombre) ?>!</h1>
             <p>Estás navegando como <strong>Turista</strong>. Explora algunas experiencias destacadas:</p>
         </div>
 
+        <form method="get" action="<?= base_url('turista/menu') ?>" class="search-container">
+            <div class="search-input-group">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" name="search" class="search-input" placeholder="Buscar experiencias por nombre..." 
+                    value="<?= esc($searchTerm ?? '') ?>">
+                <button type="submit" class="search-btn">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
         <?php if (empty($experiencias)): ?>
-            <div class="alert alert-info bg-primary-dark border-primary-light text-light">
-                No hay experiencias aprobadas disponibles por el momento.
+            <div class="no-experiences-alert">
+                <i class="bi bi-info-circle"></i>
+                <p>No hay experiencias aprobadas disponibles por el momento.</p>
+                <?php if (!empty($searchTerm)): ?>
+                    <p class="text-muted">Intenta con otro término de búsqueda.</p>
+                <?php endif; ?>
             </div>
         <?php else: ?>
             <div class="row">
@@ -308,7 +392,6 @@
         </div>
     </main>
 
-    <!-- Modal de reporte -->
     <div class="modal fade" id="modalReporte" tabindex="-1" aria-labelledby="modalReporteLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -347,7 +430,22 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const modalReporte = new bootstrap.Modal(document.getElementById('modalReporte'));
-
+        function filterExperiences() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toUpperCase();
+            const cards = document.querySelectorAll('.experiencia-card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.experiencia-title').textContent.toUpperCase();
+                if (title.includes(filter)) {
+                    card.style.display = "";
+                    card.parentElement.style.display = "";
+                } else {
+                    card.style.display = "none";
+                    card.parentElement.style.display = "none";
+                }
+            });
+        }
         function abrirModalReporte(id) {
             document.getElementById('input_experiencia_id').value = id;
             modalReporte.show();
