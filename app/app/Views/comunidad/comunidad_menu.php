@@ -210,10 +210,10 @@
 
         <!-- Nueva sección de enlaces alineados a la derecha -->
         <div class="admin-navigation ms-auto">
-            <a href="<?= base_url('/comunidad/menu') ?>" class="btn btn-outline-light btn-sm">
+            <a href="<?= base_url('/comunidad/menu') ?>" class="btn btn-outline-light">
                 <i class="bi bi-house-door"></i> Menú
             </a>
-            <a href="<?= base_url('logout') ?>" class="btn btn-outline-danger btn-sm ms-2">
+            <a href="<?= base_url('logout') ?>" class="btn btn-outline-danger ms-2">
                 <i class="bi bi-box-arrow-right"></i> Salir
             </a>
         </div>
@@ -223,6 +223,21 @@
 <main class="main-content">
     <div class="panel-card">
         <h1 class="panel-title">Panel de Comunidad</h1>
+
+        <!-- Sección de bienvenida -->
+        <div class="welcome-card mt-4 p-4 rounded-3" style="background: rgba(28, 135, 255, 0.1); border-left: 4px solid var(--primary-light);">
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="var(--primary-light)" viewBox="0 0 16 16">
+                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                    </svg>
+                </div>
+                <div class="ms-3">
+                    <h4 class="mb-1">¡Bienvenido, <?= session()->get('nombre'); ?>!</h4>
+                    <p class="mb-0 text-muted">Estás en el panel de administración de tu comunidad educativa.</p>
+                </div>
+            </div>
+        </div>
         
         <!-- Tarjetas de acciones principales -->
         <div class="row g-4 mt-3">
@@ -280,34 +295,6 @@
     </div>
 </div>
 
-
-
-        <!-- Sección de bienvenida -->
-        <div class="welcome-card mt-4 p-4 rounded-3" style="background: rgba(28, 135, 255, 0.1); border-left: 4px solid var(--primary-light);">
-            <div class="d-flex align-items-center">
-                <div class="flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="var(--primary-light)" viewBox="0 0 16 16">
-                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
-                    </svg>
-                </div>
-                <div class="ms-3">
-                    <h4 class="mb-1">¡Bienvenido, <?= session()->get('nombre'); ?>!</h4>
-                    <p class="mb-0 text-muted">Estás en el panel de administración de tu comunidad educativa.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cerrar sesión abajo -->
-        <div class="text-center mt-5">
-            <a href="<?= base_url('logout') ?>" class="btn btn-outline-danger px-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="me-2">
-                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
-                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                </svg>
-                Cerrar sesión
-            </a>
-        </div>
-    </div>
 </main>
 
 

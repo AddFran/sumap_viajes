@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Models\ExperienciaModel;
 use App\Models\ImagenModel;
+use App\Models\ReservaModel;
+use App\Models\UsuarioModel;
 
 class Comunidad extends BaseController
 {
@@ -164,24 +166,75 @@ class Comunidad extends BaseController
     }
 
     public function verReservas()
-{
-    if (!session()->get('logged_in') || session()->get('tipo_cuenta') !== 'Comunidad') {
-        return redirect()->to('/login');
+    {
+        if (!session()->get('logged_in') || session()->get('tipo_cuenta') !== 'Comunidad') {
+            return redirect()->to('/login');
+        }
+
+        $id_comunidad = session()->get('id_usuario');
+        $reservaModel = new ReservaModel();
+        $expModel = new ExperienciaModel();
+        $usuarioModel = new UsuarioModel();
+
+        // Obtener todas las experiencias de la comunidad
+        $experiencias = $expModel->where('id_comunidad', $id_comunidad)->findAll();
+
+        // Obtener los ids de las experiencias de la comunidad
+        $id_experiencias = array_map(function($exp) {
+            return $exp['id_experiencia'];
+        }, $experiencias);
+
+        if (empty($id_experiencias)) {
+            // Si no hay experiencias, retornar sin mostrar reservas
+            return view('comunidad/comunidad_reservas', ['reservas' => []]);
+        }
+
+        // Obtener las reservas asociadas a las experiencias de la comunidad
+        $reservas = $reservaModel->whereIn('id_experiencia', $id_experiencias)
+            ->orderBy('fecha_reserva', 'DESC')
+            ->findAll();
+
+        // Asociar experiencias y turistas
+        foreach ($reservas as &$reserva) {
+            // Obtener la experiencia asociada a la reserva
+            $experiencia = $expModel->find($reserva['id_experiencia']);
+            $reserva['experiencia'] = $experiencia['titulo'] ?? 'Experiencia no encontrada';
+
+            // Obtener el usuario turista (reservante)
+            $turista = $usuarioModel->find($reserva['id_usuario']);
+            $reserva['turista'] = $turista['nombre'] ?? 'Turista no encontrado';
+            $reserva['correo_turista'] = $turista['correo'] ?? 'Correo no encontrado'; // Añadimos el correo
+        }
+
+        return view('comunidad/comunidad_reservas', ['reservas' => $reservas]);
     }
 
-    $id_comunidad = session()->get('id_usuario');
 
-    $db = \Config\Database::connect();
-    $builder = $db->table('reserva r');
-    $builder->select('r.estado_reserva, r.fecha_reserva, u.nombre AS turista, e.titulo AS experiencia');
-    $builder->join('experiencia e', 'r.id_experiencia = e.id_experiencia');
-    $builder->join('usuario u', 'r.id_usuario = u.id_usuario');
-    $builder->where('e.id_comunidad', $id_comunidad);
-    $builder->orderBy('r.fecha_reserva', 'DESC');
+    public function cambiarEstadoReserva()
+    {
+        if (!session()->get('logged_in') || session()->get('tipo_cuenta') !== 'Comunidad') {
+            return redirect()->to('/login');
+        }
 
-    $reservas = $builder->get()->getResultArray();
+        // Obtener el ID de la reserva y el nuevo estado
+        $id_reserva = $this->request->getPost('id_reserva');
+        $estado_reserva = $this->request->getPost('estado_reserva');
 
-    return view('comunidad/comunidad_reservas', ['reservas' => $reservas]);
-}
+        // Instanciar el modelo de reservas
+        $reservaModel = new \App\Models\ReservaModel();
+
+        // Validar si la reserva existe
+        $reserva = $reservaModel->find($id_reserva);
+        if (!$reserva) {
+            return redirect()->back()->with('error', 'Reserva no encontrada.');
+        }
+
+        // Actualizar el estado de la reserva
+        $reservaModel->update($id_reserva, [
+            'estado_reserva' => $estado_reserva
+        ]);
+
+        return redirect()->to('/comunidad/ver-reservas')->with('mensaje', 'Estado de la reserva actualizado correctamente.');
+    }
 
 }

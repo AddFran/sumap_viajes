@@ -238,10 +238,10 @@
 
         <!-- Nueva sección de enlaces alineados a la derecha -->
         <div class="admin-navigation ms-auto">
-            <a href="<?= base_url('/comunidad/menu') ?>" class="btn btn-outline-light btn-sm">
+            <a href="<?= base_url('/comunidad/menu') ?>" class="btn btn-outline-light">
                 <i class="bi bi-house-door"></i> Menú
             </a>
-            <a href="<?= base_url('logout') ?>" class="btn btn-outline-danger btn-sm ms-2">
+            <a href="<?= base_url('logout') ?>" class="btn btn-outline-danger ms-2">
                 <i class="bi bi-box-arrow-right"></i> Salir
             </a>
         </div>
