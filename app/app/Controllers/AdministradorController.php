@@ -266,33 +266,37 @@ class AdministradorController extends Controller
         return redirect()->to('/admin/ver_usuarios');
     }
 
-
-
-    // Ver usuarios registrados
     public function ver_usuarios()
-    {
-        // Verificar si el usuario está autenticado y es un administrador
-        if (!session()->get('logged_in') || session()->get('tipo_cuenta') != 'Admin') {
-            return redirect()->to('/login');  // Redirigir al login si no es administrador
-        }
-
-        // Obtener todos los usuarios
-        $data['usuarios'] = $this->usuarioModel->findAll();
-        return view('administrador/ver_usuarios', $data);
+{
+    // Verificar si el usuario está autenticado y es un administrador
+    if (!session()->get('logged_in') || session()->get('tipo_cuenta') != 'Admin') {
+        return redirect()->to('/login');
     }
 
-    // Suspender cuenta de usuario
-    public function suspender_cuenta($id_usuario)
-    {
-        // Verificar si el usuario está autenticado y es un administrador
-        if (!session()->get('logged_in') || session()->get('tipo_cuenta') != 'Admin') {
-            return redirect()->to('/login');  // Redirigir al login si no es administrador
-        }
+    // Obtener el término de búsqueda si existe
+    $searchTerm = $this->request->getGet('search');
 
-        // Suspender la cuenta del usuario
-        $this->usuarioModel->update($id_usuario, ['tipo_cuenta' => 'Suspendida']);
-        session()->setFlashdata('success', 'La cuenta ha sido suspendida');
-        return redirect()->to('/admin/ver_usuarios');
+    // Configurar la paginación
+    $perPage = 10; // Número de usuarios por página
+
+    // Consulta base con paginación
+    $query = $this->usuarioModel;
+
+    // Aplicar filtro de búsqueda si existe
+    if (!empty($searchTerm)) {
+        $query->groupStart()
+              ->like('nombre', $searchTerm)
+              ->orLike('correo', $searchTerm)
+              ->orLike('tipo_cuenta', $searchTerm)
+              ->groupEnd();
     }
+
+    // Obtener usuarios paginados
+    $data['usuarios'] = $query->orderBy('nombre', 'ASC')->paginate($perPage);
+    $data['pager'] = $this->usuarioModel->pager;
+    $data['searchTerm'] = $searchTerm;
+
+    return view('administrador/ver_usuarios', $data);
+}
 }
 

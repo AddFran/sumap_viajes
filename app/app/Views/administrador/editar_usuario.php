@@ -255,14 +255,6 @@
                     </select>
                 </div>
 
-
-                <div class="mb-3">
-                    <label for="contrasena" class="form-label">Nueva contraseña (opcional)</label>
-                    <input type="password" class="form-control" name="contrasena" id="contrasena"
-                           placeholder="Dejar en blanco para mantener la actual">
-                    <small class="text-muted">Mínimo 8 caracteres</small>
-                </div>
-
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-save"></i> Guardar cambios

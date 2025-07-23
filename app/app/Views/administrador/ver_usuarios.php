@@ -174,6 +174,79 @@
             padding: 30px;
         }
 
+        .search-container {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .search-input-group {
+            display: flex;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .search-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-light);
+            padding: 12px 20px;
+            padding-left: 45px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(28, 135, 255, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            pointer-events: none;
+        }
+
+        .search-btn {
+            background: var(--primary-light);
+            border: none;
+            color: white;
+            padding: 0 20px;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-base);
+        }
+
+        /* Estilos para los resultados de búsqueda */
+        .search-results-container {
+            margin-top: 20px;
+        }
+
+        .no-results-alert {
+            background: rgba(10, 25, 47, 0.8);
+            border: 1px solid var(--primary-light);
+            color: var(--text-light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .no-results-alert i {
+            font-size: 2rem;
+            color: var(--primary-light);
+            margin-bottom: 10px;
+            display: block;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .admin-header {
@@ -231,15 +304,30 @@
     <main class="admin-content">
         <h1 class="admin-title">Gestión de Usuarios</h1>
         
-        
+        <form method="get" action="<?= base_url('/admin/ver_usuarios') ?>" class="search-container mb-4">
+        <div class="search-input-group">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" name="search" class="search-input" placeholder="Buscar usuarios por nombre, correo o tipo..." 
+                value="<?= esc($searchTerm ?? '') ?>">
+            <button type="submit" class="search-btn">
+                <i class="bi bi-search"></i> Buscar
+            </button>
+        </div>
+    </form>
 
-        <?php if (empty($usuarios)): ?>
-            <div class="no-results">
-                <i class="bi bi-people" style="font-size: 2rem;"></i>
-                <h4>No se encontraron usuarios</h4>
-                <p>No hay usuarios que coincidan con los criterios de búsqueda.</p>
-            </div>
-        <?php else: ?>
+    <?php if (!empty($searchTerm) && empty($usuarios)): ?>
+        <div class="no-results-alert">
+            <i class="bi bi-exclamation-circle"></i>
+            <p>No se encontraron usuarios que coincidan con tu búsqueda.</p>
+            <p class="text-muted">Intenta con otro término de búsqueda.</p>
+        </div>
+    <?php elseif (empty($usuarios)): ?>
+        <div class="no-results">
+            <i class="bi bi-people" style="font-size: 2rem;"></i>
+            <h4>No hay usuarios registrados</h4>
+            <p>Actualmente no hay usuarios en el sistema.</p>
+        </div>
+    <?php else: ?>
             <div class="table-container">
                 <div class="table-responsive">
                     <table class="table table-dark table-bordered table-striped table-hover align-middle">
