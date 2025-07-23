@@ -475,6 +475,7 @@
                 <button class="btn btn-reserve" onclick="abrirReserva()">
                     <i class="bi bi-calendar-plus"></i> Reservar Experiencia
                 </button>
+                
             </div>
         </div>
     </main>
@@ -489,6 +490,7 @@
     </div>
 
 
+    <!-- Modal para la reserva -->
     <div class="modal fade" id="modalReserva" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -524,6 +526,7 @@
         </div>
     </div>
 
+    <!-- Modal para el pago -->
     <div class="modal fade" id="modalPago" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -597,16 +600,41 @@
         }
 
         function abrirReserva() {
-            modalReserva.show();
+            const cantidad = parseInt(document.getElementById("numero_personas").value);
+            
+            if (cantidad <= 0) {
+                alert('El número de personas debe ser mayor que 0.');
+                return;
+            }
+
+            if (cantidad !== Math.floor(cantidad)) {
+                alert('El número de personas debe ser un número entero.');
+                return;
+            }
+
+            const cuposDisponibles = <?= esc($experiencia['cupo_maximo']) ?>;
+            if (cantidad > cuposDisponibles) {
+                alert('No hay cupos disponibles.');
+                return;
+            }
+
             calcularTotal();
+            modalReserva.show();
         }
+
 
         function abrirPago() {
             const precio = parseFloat(document.getElementById("precio_unitario").value);
             const cantidad = parseInt(document.getElementById("numero_personas").value);
             const total = (precio * cantidad).toFixed(2);
 
-            // Pasar valores al modal de pago
+            // Validar si hay suficientes cupos
+            const cuposDisponibles = <?= esc($experiencia['cupo_maximo']) ?>;
+            if (cantidad > cuposDisponibles) {
+                alert('No hay suficientes cupos disponibles. Solo hay ' + cuposDisponibles + ' cupos.');
+                return;
+            }
+
             document.getElementById("pago_monto").value = total;
             document.getElementById("pago_id_experiencia").value = document.getElementById("id_experiencia").value;
             document.getElementById("pago_num_personas").value = cantidad;

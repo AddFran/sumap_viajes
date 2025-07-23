@@ -284,7 +284,7 @@
                                             </small>
                                         </td>
                                         <td>S/ <?= number_format($exp['precio'], 2) ?></td>
-                                        <td><?= esc($exp['cupos']) ?></td>
+                                        <td><?= esc($exp['cupo_maximo']) ?></td>
                                         <td>
                                             <span class="badge <?= $exp['estado'] == 'Activo' ? 'bg-success' : 'bg-warning' ?>">
                                                 <?= esc($exp['estado']) ?>

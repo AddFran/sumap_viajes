@@ -441,8 +441,10 @@
     
     <script>
         function contactarTurista(email) {
-            window.location.href = `mailto:${email}?subject=SUMAQ VIAJES - Consulta sobre tu reserva`;
+            // Abre el cliente de correo con el correo del turista y asunto predeterminado
+            window.open(`mailto:${email}?subject=SUMAQ VIAJES - Consulta sobre tu reserva`, '_blank');
         }
+
         
         // Actualizar el badge de estado cuando cambia el select
         document.querySelectorAll('select[name="estado_reserva"]').forEach(select => {
