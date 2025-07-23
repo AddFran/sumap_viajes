@@ -400,14 +400,6 @@
                 </div>
             `;
             
-            if (experiencia.foto_experiencia) {
-                html += `
-                    <div class="mb-3">
-                        <h5>Imagen principal</h5>
-                        <img src="${experiencia.foto_experiencia}" alt="Imagen experiencia" class="img-fluid rounded">
-                    </div>
-                `;
-            }
             
             modalContent.innerHTML = html;
             

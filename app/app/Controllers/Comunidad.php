@@ -47,6 +47,7 @@ class Comunidad extends BaseController
             'fecha_inicio' => 'required|valid_date',
             'fecha_fin' => 'required|valid_date',
             'precio' => 'required|decimal|greater_than_equal_to[0]',
+            'cupos' => 'required|integer|greater_than[0]',
             'imagenes.*' => 'uploaded[imagenes.0]|max_size[imagenes,2048]|is_image[imagenes]|mime_in[imagenes,image/jpg,image/jpeg,image/png]'
         ], [
             'imagenes.*' => [
@@ -73,31 +74,25 @@ class Comunidad extends BaseController
             'precio' => $this->request->getPost('precio'),
             'estado' => 'Pendiente',
             'cupo_maximo' => $this->request->getPost('cupos'),
-        ], true); // 'true' devuelve el ID insertado
+        ], true);
 
         $imagenes = $this->request->getFiles()['imagenes'];
 
         foreach ($imagenes as $img) {
             if ($img->isValid() && !$img->hasMoved()) {
                 $nombre = $img->getRandomName();
-
-                $nombre = $img->getRandomName();
                 $ruta_relativa = 'uploads/experiencias/' . $nombre;
                 $ruta_absoluta = FCPATH . $ruta_relativa;
-
                 $img->move(dirname($ruta_absoluta), $nombre);
-
-                // Guarda la ruta relativa (para mostrarla en HTML)
                 $imgModel->insert([
                     'id_experiencia' => $id_experiencia,
                     'ruta_imagen' => $ruta_relativa,
                     'descripcion' => '',
                 ]);
-
             }
         }
 
-        return redirect()->to('/comunidad/menu')->with('mensaje', 'Experiencia registrada con imágenes.');
+       return redirect()->to('/comunidad/menu')->with('mensaje', 'Experiencia registrada con imágenes y cupos.');
     }
 
     public function gestionarExperiencias()

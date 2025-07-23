@@ -254,7 +254,7 @@
                 <div class="mb-3">
                     <label for="titulo" class="form-label">Título</label>
                     <input type="text" class="form-control <?= isset($validation) && $validation->hasError('titulo') ? 'is-invalid' : '' ?>" 
-                           id="titulo" name="titulo" value="<?= old('titulo') ?>" required>
+                        id="titulo" name="titulo" value="<?= old('titulo') ?>" required>
                     <?php if (isset($validation) && $validation->hasError('titulo')): ?>
                         <div class="invalid-feedback">
                             <?= $validation->getError('titulo') ?>
@@ -265,7 +265,7 @@
                 <div class="mb-3">
                     <label for="descripcion" class="form-label">Descripción</label>
                     <textarea class="form-control <?= isset($validation) && $validation->hasError('descripcion') ? 'is-invalid' : '' ?>" 
-                              id="descripcion" name="descripcion" required><?= old('descripcion') ?></textarea>
+                            id="descripcion" name="descripcion" required><?= old('descripcion') ?></textarea>
                     <?php if (isset($validation) && $validation->hasError('descripcion')): ?>
                         <div class="invalid-feedback">
                             <?= $validation->getError('descripcion') ?>
@@ -277,7 +277,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
                         <input type="date" class="form-control <?= isset($validation) && $validation->hasError('fecha_inicio') ? 'is-invalid' : '' ?>" 
-                               id="fecha_inicio" name="fecha_inicio" value="<?= old('fecha_inicio') ?>" required>
+                            id="fecha_inicio" name="fecha_inicio" value="<?= old('fecha_inicio') ?>" required>
                         <?php if (isset($validation) && $validation->hasError('fecha_inicio')): ?>
                             <div class="invalid-feedback">
                                 <?= $validation->getError('fecha_inicio') ?>
@@ -288,7 +288,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="fecha_fin" class="form-label">Fecha Fin</label>
                         <input type="date" class="form-control <?= isset($validation) && $validation->hasError('fecha_fin') ? 'is-invalid' : '' ?>" 
-                               id="fecha_fin" name="fecha_fin" value="<?= old('fecha_fin') ?>" required>
+                            id="fecha_fin" name="fecha_fin" value="<?= old('fecha_fin') ?>" required>
                         <?php if (isset($validation) && $validation->hasError('fecha_fin')): ?>
                             <div class="invalid-feedback">
                                 <?= $validation->getError('fecha_fin') ?>
@@ -300,7 +300,7 @@
                 <div class="mb-3">
                     <label for="precio" class="form-label">Precio (S/)</label>
                     <input type="number" step="0.01" class="form-control <?= isset($validation) && $validation->hasError('precio') ? 'is-invalid' : '' ?>" 
-                           id="precio" name="precio" value="<?= old('precio') ?>" required>
+                        id="precio" name="precio" value="<?= old('precio') ?>" required>
                     <?php if (isset($validation) && $validation->hasError('precio')): ?>
                         <div class="invalid-feedback">
                             <?= $validation->getError('precio') ?>
@@ -308,10 +308,21 @@
                     <?php endif; ?>
                 </div>
 
+                <div class="mb-3">
+                    <label for="cupos" class="form-label">Cupos Disponibles</label>
+                    <input type="number" class="form-control <?= isset($validation) && $validation->hasError('cupos') ? 'is-invalid' : '' ?>" 
+                        id="cupos" name="cupos" value="<?= old('cupos') ?>" required>
+                    <?php if (isset($validation) && $validation->hasError('cupos')): ?>
+                        <div class="invalid-feedback">
+                            <?= $validation->getError('cupos') ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
                 <div class="mb-4">
                     <label for="imagenes" class="form-label">Imágenes (máx. 5, solo JPG/PNG)</label>
                     <input type="file" class="form-control <?= isset($validation) && $validation->hasError('imagenes') ? 'is-invalid' : '' ?>" 
-                           id="imagenes" name="imagenes[]" accept=".jpg,.jpeg,.png" multiple required>
+                        id="imagenes" name="imagenes[]" accept=".jpg,.jpeg,.png" multiple required>
                     <?php if (isset($validation) && $validation->hasError('imagenes')): ?>
                         <div class="invalid-feedback">
                             <?= $validation->getError('imagenes') ?>
