@@ -363,7 +363,7 @@
                     <i class="bi bi-calendar-x"></i>
                     <h4>No hay reservas registradas</h4>
                     <p>Actualmente no tienes reservas para tus experiencias. Cuando los turistas reserven, aparecerán aquí.</p>
-                    <a href="<?= base_url('/comunidad/mis-experiencias') ?>" class="btn btn-outline-primary">
+                    <a href="<?= base_url('/comunidad/gestionar-experiencias') ?>" class="btn btn-outline-primary">
                         <i class="bi bi-compass"></i> Ver mis experiencias
                     </a>
                 </div>
