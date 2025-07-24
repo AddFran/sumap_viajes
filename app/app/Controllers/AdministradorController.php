@@ -176,6 +176,9 @@ class AdministradorController extends Controller
                 ->update(['estado' => 'Baneada']);
         }
 
+        $db->table('Reporte')->where('id_experiencia', $id_experiencia)
+                     ->update(['estado_reporte' => 'Archivado']);
+
         // Confirmar la transacción
         $db->transComplete();
 
