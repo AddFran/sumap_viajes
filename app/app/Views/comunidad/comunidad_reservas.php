@@ -412,14 +412,13 @@
                                         <td data-label="Acciones">
                                             <form action="<?= base_url('comunidad/cambiar_estado_reserva') ?>" method="post" class="status-form">
                                                 <input type="hidden" name="id_reserva" value="<?= esc($res['id_reserva']) ?>">
-                                                <select name="estado_reserva" class="status-select" onchange="this.form.submit()">
-                                                    <option value="Pendiente" <?= $res['estado_reserva'] == 'Pendiente' ? 'selected' : '' ?>>Pendiente</option>
-                                                    <option value="Confirmada" <?= $res['estado_reserva'] == 'Confirmada' ? 'selected' : '' ?>>Confirmada</option>
-                                                    <option value="Completada" <?= $res['estado_reserva'] == 'Completada' ? 'selected' : '' ?>>Completada</option>
-                                                    <option value="Cancelada" <?= $res['estado_reserva'] == 'Cancelada' ? 'selected' : '' ?>>Cancelada</option>
-                                                </select>
-                                                <button type="button" class="btn btn-sm btn-outline-info" onclick="contactarTurista('<?= esc($res['correo_turista']) ?>')">
-                                                    <i class="bi bi-envelope"></i> Contactar
+                                                <input type="hidden" name="estado_reserva" value="Completada">
+                                                <button 
+                                                    type="submit" 
+                                                    class="btn btn-success"
+                                                    <?= $res['estado_reserva'] == 'Confirmada' ? '' : 'disabled' ?>
+                                                >
+                                                    Completó la experiencia
                                                 </button>
                                             </form>
                                         </td>
