@@ -367,13 +367,6 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Estado</label>
-                            <select name="estado" id="estado" class="form-select">
-                                <option value="Activo">Activo</option>
-                                <option value="Inactivo">Inactivo</option>
-                            </select>
-                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -399,8 +392,7 @@
             document.getElementById('fecha_inicio').value = exp.fecha_inicio;
             document.getElementById('fecha_fin').value = exp.fecha_fin;
             document.getElementById('precio').value = exp.precio;
-            document.getElementById('cupos').value = exp.cupos;
-            document.getElementById('estado').value = exp.estado;
+            document.getElementById('cupos').value = exp.cupo_maximo;
 
             modalEditar.show();
         }
