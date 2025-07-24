@@ -78,10 +78,9 @@ $routes->get('admin/evaluar_reporte/(:num)/(:any)', 'AdministradorController::ev
 
 $routes->get('admin/ver_usuarios', 'AdministradorController::ver_usuarios');  // Ver usuarios
 $routes->get('admin/suspender_cuenta/(:num)', 'AdministradorController::suspender_cuenta/$1');  // Suspender cuenta de usuario
+$routes->post('admin/ban_experiencia', 'AdministradorController::ban_experiencia');
 
-
-
-$routes->post('admin/evaluar_reporte', 'AdminController::evaluar_reporte_ajax');
+$routes->get('/suspendido', 'Suspendido::index');
 
 
 

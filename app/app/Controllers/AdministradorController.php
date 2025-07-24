@@ -5,12 +5,18 @@ use App\Models\ExperienciaModel;
 use App\Models\ReporteModel;
 use App\Models\UsuarioModel;
 use App\Models\ReservaModel;
+use App\Models\CategoriaReporteModel;
 use CodeIgniter\Controller;
 
 class AdministradorController extends Controller
 {
     public function __construct()
     {
+        // Verificar si el usuario está autenticado y es un administrador
+        if (!session()->get('logged_in') || session()->get('tipo_cuenta') != 'Admin') {
+            return redirect()->to('/login'); // Redirigir al login si no es administrador
+        }
+
         // Cargar los modelos necesarios
         helper('form');
         helper('text');
@@ -19,6 +25,7 @@ class AdministradorController extends Controller
         $this->reporteModel = new ReporteModel();
         $this->usuarioModel = new UsuarioModel();
         $this->reservaModel = new ReservaModel();
+        $this->categoriaReporteModel = new CategoriaReporteModel();
     }
 
     // Menú principal del administrador
@@ -97,27 +104,30 @@ class AdministradorController extends Controller
             return redirect()->to('/login');  // Redirigir al login si no es administrador
         }
 
-        // Obtener los reportes pendientes de la base de datos
-        $reportes = $this->reporteModel
-            ->select('Reporte.*, Categoria_Reporte.motivo')
-            ->join('Categoria_Reporte', 'Reporte.id_categoria = Categoria_Reporte.id_categoria')
-            ->where('estado_reporte', 'Pendiente')
-            ->findAll();
+        // Obtener los reportes pendientes
+        $reportes = $this->reporteModel->where('estado_reporte', 'Pendiente')->findAll();
 
-        // Obtener los detalles de lo que fue reportado (ya sea experiencia o comunidad)
+        // Procesar los reportes para agregar los detalles del reportador y el motivo
         foreach ($reportes as &$reporte) {
+            // Obtener el usuario que reportó
+            $usuario = $this->usuarioModel->find($reporte['id_usuario']);
+            $reporte['nombre_reportador'] = $usuario['nombre'];
+            $reporte['email_reportador'] = $usuario['correo'];
+
+            // Obtener el motivo del reporte desde la categoría
+            $categoria = $this->categoriaReporteModel->find($reporte['id_categoria']);
+            $reporte['motivo'] = $categoria ? $categoria['motivo'] : 'Sin motivo';
+
+            // Obtener detalles del reportado (Experiencia o Comunidad)
             if ($reporte['id_experiencia']) {
-                // Si el reporte es sobre una experiencia
                 $experiencia = $this->experienciaModel->find($reporte['id_experiencia']);
                 $reporte['tipo_reportado'] = 'Experiencia';
-                $reporte['detalle_reportado'] = $experiencia['titulo'];  // Título de la experiencia
-                $reporte['descripcion_reportado'] = $experiencia['descripcion']; // Descripción de la experiencia
+                $reporte['detalle_reportado'] = $experiencia['titulo'];
             } elseif ($reporte['id_comunidad']) {
-                // Si el reporte es sobre una comunidad
+                // En caso de que el reporte sea sobre una comunidad
                 $comunidad = $this->usuarioModel->find($reporte['id_comunidad']);
                 $reporte['tipo_reportado'] = 'Comunidad';
-                $reporte['detalle_reportado'] = $comunidad['nombre'];  // Nombre de la comunidad
-                $reporte['descripcion_reportado'] = $comunidad['descripcion'] ?? 'Sin descripción'; // Descripción de la comunidad
+                $reporte['detalle_reportado'] = $comunidad['nombre'];
             }
         }
 
@@ -125,74 +135,62 @@ class AdministradorController extends Controller
         return view('administrador/ver_reportes', ['reportes' => $reportes]);
     }
 
-    public function evaluar_reporte($id_reporte, $estado)
+    public function ban_experiencia()
     {
         // Verificar si el usuario está autenticado y es un administrador
         if (!session()->get('logged_in') || session()->get('tipo_cuenta') != 'Admin') {
-            return redirect()->to('/login');  // Redirigir al login si no es administrador
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Acceso no autorizado']);
         }
 
-        // Verificar que el reporte existe
-        $reporte = $this->reporteModel->find($id_reporte);
-        if (!$reporte) {
-            session()->setFlashdata('error', 'Reporte no encontrado.');
-            return redirect()->to('/admin/ver_reportes');
+        // Obtener los datos enviados en el POST
+        $id_experiencia = $this->request->getPost('id_experiencia');
+        $razon = $this->request->getPost('razon');
+
+        // Verificar si los datos están presentes
+        if (empty($id_experiencia) || empty($razon)) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Faltan datos para realizar la acción']);
         }
 
-        // Preparar los datos a actualizar
-        $datos_actualizacion = [
-            'estado_reporte' => $estado,  // Asegúrate de que 'estado_reporte' tenga un valor
-        ];
+        // Iniciar la transacción para asegurarnos de que todo se ejecute correctamente
+        $db = \Config\Database::connect();
+        $db->transStart();
 
-        // Verificar si los datos no están vacíos antes de intentar la actualización
-        if (empty($datos_actualizacion) || !isset($datos_actualizacion['estado_reporte'])) {
-            session()->setFlashdata('error', 'No hay datos para actualizar.');
-            return redirect()->to('/admin/ver_reportes');
+        // 1. Banear la experiencia
+        $db->table('Experiencia')->update(['estado' => 'Baneada', 'motivo_baneo' => $razon], ['id_experiencia' => $id_experiencia]);
+
+        // Verificar si la experiencia fue encontrada y actualizada
+        if ($db->affectedRows() === 0) {
+            $db->transRollback();
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Experiencia no encontrada']);
         }
 
-        // Realizar la actualización
-        $actualizacion = $this->reporteModel->update($id_reporte, $datos_actualizacion);
+        // 2. Obtener la comunidad asociada a la experiencia
+        $comunidad = $db->table('Experiencia')->select('id_comunidad')->where('id_experiencia', $id_experiencia)->get()->getRow();
 
-        // Verificar si la actualización fue exitosa
-        if ($actualizacion) {
-            // Si el reporte es justificado, realizar la acción correspondiente (por ejemplo, suspender cuenta)
-            if ($estado === 'Justificado') {
-                if ($reporte['id_experiencia']) {
-                    // Si el reporte es sobre una experiencia, suspender la cuenta de la comunidad correspondiente
-                    $experiencia = $this->experienciaModel->find($reporte['id_experiencia']);
-                    if ($experiencia) {
-                        $this->usuarioModel->update($experiencia['id_comunidad'], ['tipo_cuenta' => 'Suspendida']);
-                    }
-                }
-            }
+        if ($comunidad) {
+            // 3. Suspender la cuenta de la comunidad
+            $db->table('Usuario')->update(['tipo_cuenta' => 'Suspendido', 'motivo_suspension' => $razon], ['id_usuario' => $comunidad->id_comunidad]);
 
-            session()->setFlashdata('success', 'El reporte ha sido procesado');
-        } else {
-            session()->setFlashdata('error', 'No se pudo actualizar el reporte.');
+            // 4. Cancelar todas las experiencias de esta comunidad (en estado 'Pendiente' o cualquier estado)
+            $db->table('Experiencia')->where('id_comunidad', $comunidad->id_comunidad)
+                ->update(['estado' => 'Baneada']);
         }
 
-        // Redirigir al listado de reportes
-        return redirect()->to('/admin/ver_reportes');
+        // Confirmar la transacción
+        $db->transComplete();
+
+        // Verificar si la transacción fue exitosa
+        if ($db->transStatus() === FALSE) {
+            // Si la transacción falla, revertir los cambios
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Error al procesar el baneo de la experiencia']);
+        }
+
+        // Devolver una respuesta exitosa
+        return $this->response->setJSON(['status' => 'ok', 'message' => 'La experiencia ha sido baneada y la comunidad suspendida']);
     }
 
 
 
-    public function evaluar_reporte_ajax()
-    {
-        if ($this->request->isAJAX()) {
-            $id_reporte = $this->request->getPost('id_reporte');
-            $estado = $this->request->getPost('estado');
-
-            $reporte = $this->reporteModel->find($id_reporte);
-            if (!$reporte) {
-                return $this->response->setJSON(['status' => 'error', 'message' => 'Reporte no encontrado']);
-            }
-
-            $this->reporteModel->update($id_reporte, ['estado_reporte' => $estado]);
-
-            return $this->response->setJSON(['status' => 'ok', 'message' => 'Reporte actualizado']);
-        }
-    }
 
 
 
@@ -218,24 +216,18 @@ class AdministradorController extends Controller
 
     public function actualizar_usuario()
     {
-        // Verificar si el usuario está autenticado y es un administrador
-        if (!session()->get('logged_in') || session()->get('tipo_cuenta') != 'Admin') {
-            return redirect()->to('/login');  // Redirigir al login si no es administrador
-        }
-
-        // Obtener los datos del formulario
         $id_usuario = $this->request->getPost('id_usuario');
         $nombre = $this->request->getPost('nombre');
         $correo = $this->request->getPost('correo');
         $tipo_cuenta = $this->request->getPost('tipo_cuenta');
 
-        // Validar que los datos sean correctos (puedes agregar más validaciones)
+        // Validar que los campos no estén vacíos
         if (!$nombre || !$correo || !$tipo_cuenta) {
             session()->setFlashdata('error', 'Todos los campos son obligatorios.');
             return redirect()->to('/admin/editar_usuario/' . $id_usuario);
         }
 
-        // Actualizar los datos del usuario
+        // Actualizar el usuario
         $this->usuarioModel->update($id_usuario, [
             'nombre' => $nombre,
             'correo' => $correo,
@@ -247,26 +239,22 @@ class AdministradorController extends Controller
     }
 
 
+
     public function eliminar_usuario($id_usuario)
     {
-        // Verificar si el usuario está autenticado y es un administrador
-        if (!session()->get('logged_in') || session()->get('tipo_cuenta') != 'Admin') {
-            return redirect()->to('/login');  // Redirigir al login si no es administrador
-        }
-
-        // Verificar que el usuario exista antes de eliminar
         $usuario = $this->usuarioModel->find($id_usuario);
         if (!$usuario) {
             session()->setFlashdata('error', 'Usuario no encontrado.');
             return redirect()->to('/admin/ver_usuarios');
         }
 
-        // Eliminar el usuario
+        // Eliminar usuario
         $this->usuarioModel->delete($id_usuario);
 
         session()->setFlashdata('success', 'Usuario eliminado correctamente.');
         return redirect()->to('/admin/ver_usuarios');
     }
+
 
     public function ver_usuarios()
     {

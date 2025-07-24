@@ -20,6 +20,7 @@
             --success-color: #28a745;
             --danger-color: #dc3545;
             --warning-color: #ffc107;
+            --info-color: #17a2b8;
         }
         
         body {
@@ -31,7 +32,7 @@
             padding: 0;
         }
 
-        /* Header estilo consistente */
+        /* Header */
         .admin-header {
             background: rgba(10, 25, 47, 0.9);
             backdrop-filter: blur(10px);
@@ -52,12 +53,6 @@
             margin-right: 15px;
         }
 
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
         /* Contenido principal */
         .admin-content {
             padding: 30px;
@@ -65,15 +60,27 @@
             margin: 0 auto;
         }
 
-        .admin-title {
+        .panel-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+        }
+
+        .panel-title {
             color: var(--text-light);
             font-weight: 600;
             margin-bottom: 25px;
             position: relative;
             padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .admin-title::after {
+        .panel-title::after {
             content: '';
             display: block;
             width: 60px;
@@ -124,10 +131,83 @@
             border-color: rgba(255, 255, 255, 0.1);
         }
 
+        .table-bordered th, 
+        .table-bordered td {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Badges */
+        .badge-report {
+            font-weight: 500;
+            padding: 0.35em 0.65em;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .badge-user {
+            background-color: rgba(28, 135, 255, 0.15);
+            color: var(--primary-light);
+        }
+
+        .badge-experience {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: var(--warning-color);
+        }
+
+        /* Botones */
+        .btn-action {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            margin-right: 5px;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-justify {
+            background-color: rgba(40, 167, 69, 0.15);
+            color: var(--success-color);
+        }
+
+        .btn-justify:hover {
+            background-color: rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-reject {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: var(--danger-color);
+        }
+
+        .btn-reject:hover {
+            background-color: rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-ban {
+            background-color: rgba(220, 53, 69, 0.3);
+            color: var(--danger-color);
+        }
+
+        .btn-ban:hover {
+            background-color: rgba(220, 53, 69, 0.5);
+        }
+
+        .btn-details {
+            background-color: rgba(23, 162, 184, 0.15);
+            color: var(--info-color);
+        }
+
+        .btn-details:hover {
+            background-color: rgba(23, 162, 184, 0.3);
+        }
+
         /* Detalles reporte */
         .report-details {
             display: none;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: var(--border-radius);
             padding: 15px;
             margin-top: 10px;
@@ -136,52 +216,39 @@
 
         .report-details p {
             margin-bottom: 5px;
+            font-size: 0.9rem;
         }
 
-        /* Badges */
-        .badge-report {
+        .detail-label {
+            color: var(--text-muted);
             font-weight: 500;
-            padding: 0.35em 0.65em;
-            border-radius: 20px;
-        }
-
-        .badge-user {
-            background-color: var(--primary-light);
-        }
-
-        .badge-experience {
-            background-color: var(--warning-color);
-            color: #212529;
-        }
-
-        /* Botones */
-        .btn-sm {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.875rem;
-            border-radius: 6px;
             margin-right: 5px;
         }
 
-        .btn-justify {
-            background-color: var(--success-color);
-            border-color: var(--success-color);
-        }
-
-        .btn-reject {
-            background-color: var(--danger-color);
-            border-color: var(--danger-color);
-        }
-
-        .btn-details {
-            background-color: var(--primary-light);
-            border-color: var(--primary-light);
-        }
-
-        /* Sin resultados */
-        .no-results {
-            color: var(--text-muted);
+        /* Empty state */
+        .empty-state {
             text-align: center;
-            padding: 30px;
+            padding: 40px 20px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: var(--border-radius);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--text-muted);
+            opacity: 0.5;
+            margin-bottom: 15px;
+        }
+
+        .empty-state h4 {
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto 20px;
         }
 
         /* Responsive */
@@ -190,24 +257,105 @@
                 flex-direction: column;
                 padding: 15px;
                 text-align: center;
+                gap: 15px;
             }
             
             .logo-container {
-                margin-bottom: 15px;
-            }
-            
-            .user-profile {
-                flex-direction: column;
-                gap: 5px;
+                margin-bottom: 0;
             }
             
             .admin-content {
                 padding: 20px;
             }
             
+            .panel-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .panel-title::after {
+                left: 0;
+            }
+            
             .table-responsive {
                 border-radius: var(--border-radius);
             }
+            
+            /* Tabla responsive */
+            .table thead {
+                display: none;
+            }
+            
+            .table tbody tr {
+                display: block;
+                margin-bottom: 15px;
+                border-radius: var(--border-radius);
+                overflow: hidden;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            }
+            
+            .table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 15px;
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+            }
+            
+            .table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                margin-right: 15px;
+                color: var(--text-muted);
+                font-size: 0.85rem;
+                text-transform: uppercase;
+            }
+            
+            .btn-group-mobile {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+        }
+
+        /* Agrupación por experiencia */
+        .experience-group {
+            background: rgba(28, 135, 255, 0.1);
+            border-left: 3px solid var(--primary-light);
+            margin-bottom: 15px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .experience-header {
+            padding: 10px 15px;
+            background: rgba(0, 51, 102, 0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .experience-title {
+            font-weight: 500;
+            color: var(--primary-light);
+        }
+
+        .report-count {
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+        .reports-container {
+            padding: 0;
         }
     </style>
 </head>
@@ -218,7 +366,6 @@
             <img class="logo-img" src="<?= base_url('upload/logo.png') ?>" alt="Logo">
         </div>
 
-        <!-- Sección del usuario (sin cambios) -->
         <div class="user-profile">
             <div class="user-info">
                 <div class="user-name"><?= session()->get('nombre') ?></div>
@@ -226,7 +373,6 @@
             </div>
         </div>
 
-        <!-- Nueva sección de enlaces en el header alineada a la derecha -->
         <div class="admin-navigation ms-auto">
             <a href="<?= base_url('/admin/menu') ?>" class="btn btn-outline-light">
                 <i class="bi bi-house-door"></i> Menú
@@ -239,76 +385,104 @@
 
     <!-- Contenido principal -->
     <main class="admin-content">
-        <h1 class="admin-title">Reportes Pendientes</h1>
-        
-        <?php if (session()->getFlashdata('success')): ?>
-            <div class="alert-admin">
-                <i class="bi bi-check-circle-fill"></i> <?= session()->getFlashdata('success') ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if (empty($reportes)): ?>
-            <div class="no-results">
-                <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
-                <h4>No hay reportes pendientes</h4>
-                <p>Todos los reportes han sido revisados.</p>
-            </div>
-        <?php else: ?>
-            <div class="table-container">
-                <div class="table-responsive">
-                    <table class="table table-dark table-bordered table-striped table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Motivo</th>
-                                <th>Reportado</th>
-                                <th>Descripción</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($reportes as $reporte): ?>
-                                <tr>
-                                    <td>#<?= $reporte['id_reporte'] ?></td>
-
-                                    <!-- Columna de Motivo y breve descripción -->
-                                    <td>
-                                        <strong><?= esc($reporte['motivo'] ?? 'Sin motivo') ?></strong>
-                                        
-                                    </td>
-
-                                    <!-- Columna de Tipo de Reportado (Usuario o Experiencia) -->
-                                    <td>
-                                        <span class="badge-report <?= $reporte['tipo_reportado'] === 'Usuario' ? 'badge-user' : 'badge-experience' ?>">
-                                            <?= esc($reporte['tipo_reportado']) ?>
-                                        </span>
-                                        <br>
-                                        <?= esc($reporte['detalle_reportado']) ?>
-                                    </td>
-
-                                    <!-- Nueva columna: Descripción completa del reporte -->
-                                    <td><?= esc($reporte['descripcion']) ?></td>
-
-                                    <!-- Botones de acción (Justificar / Rechazar) -->
-                                    <td>
-                                        <div class="d-flex flex-wrap">
-                                            <a href="<?= base_url('admin/evaluar_reporte/' . $reporte['id_reporte'] . '/Justificado') ?>"
-                                            class="btn btn-sm btn-justify text-white me-1">
-                                                <i class="bi bi-check-lg"></i> Justificar
-                                            </a>
-                                            <a href="<?= base_url('admin/evaluar_reporte/' . $reporte['id_reporte'] . '/No_Justificado') ?>"
-                                            class="btn btn-sm btn-reject text-white">
-                                                <i class="bi bi-x-lg"></i> Rechazar
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+        <div class="panel-card">
+            <h1 class="panel-title">
+                <i class="bi bi-flag-fill"></i> Reportes Pendientes
+            </h1>
+            
+            <?php if (session()->getFlashdata('success')): ?>
+                <div class="alert-admin">
+                    <i class="bi bi-check-circle-fill"></i> <?= session()->getFlashdata('success') ?>
                 </div>
-            </div>
-        <?php endif; ?>
+            <?php endif; ?>
+
+            <?php if (empty($reportes)): ?>
+                <div class="empty-state">
+                    <i class="bi bi-check-circle"></i>
+                    <h4>No hay reportes pendientes</h4>
+                    <p>Todos los reportes han sido revisados.</p>
+                </div>
+            <?php else: ?>
+                <!-- Agrupación por experiencia -->
+                <?php 
+                // Agrupar reportes por experiencia (si son de tipo experiencia)
+                $groupedReports = [];
+                foreach ($reportes as $reporte) {
+                    if ($reporte['tipo_reportado'] === 'Experiencia') {
+                        $expId = $reporte['id_experiencia'] ?? 'general';
+                        $groupedReports[$expId][] = $reporte;
+                    } else {
+                        $groupedReports['usuarios'][] = $reporte;
+                    }
+                }
+                ?>
+
+                <!-- Reportes de experiencias agrupados -->
+                <?php foreach ($groupedReports as $expId => $reports): ?>
+                    <?php if ($expId !== 'usuarios'): ?>
+                        <?php $firstReport = $reports[0]; ?>
+                        <div class="experience-group">
+                            <div class="experience-header" onclick="toggleGroup('exp_<?= $expId ?>')">
+                                <div class="experience-title">
+                                    <i class="bi bi-image-alt"></i> Experiencia: <?= esc($firstReport['detalle_reportado']) ?>
+                                    <small class="text-muted">(ID: <?= $expId ?>)</small>
+                                </div>
+                                <div class="report-count"><?= count($reports) ?></div>
+                            </div>
+                            <div class="reports-container" id="exp_<?= $expId ?>">
+                                <div class="table-container">
+                                    <div class="table-responsive">
+                                        <table class="table table-dark table-bordered table-striped table-hover align-middle">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Motivo</th>
+                                                    <th>Reportado por</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($reports as $reporte): ?>
+                                                    <tr>
+                                                        <td data-label="ID">#<?= $reporte['id_reporte'] ?></td>
+                                                        <td data-label="Motivo">
+                                                            <strong><?= esc($reporte['motivo'] ?? 'Sin motivo') ?></strong>
+                                                        </td>
+                                                        <td data-label="Reportado por">
+                                                            <span class="badge-report badge-user">
+                                                                <?= esc($reporte['nombre_reportador']) ?>
+                                                            </span>
+                                                        </td>
+                                                        <td data-label="Acciones">
+                                                            <div class="d-flex flex-wrap btn-group-mobile">
+                                                                <button class="btn-action btn-details" onclick="toggleDetalles(<?= $reporte['id_reporte'] ?>)">
+                                                                    <i class="bi bi-info-circle"></i> Detalles
+                                                                </button>
+                                                                <button class="btn-action btn-ban" 
+                                                                onclick="banExperience(<?= $expId ?>, '<?= esc($firstReport['detalle_reportado']) ?>')">
+                                                                <i class="bi bi-slash-circle"></i> Banear Experiencia
+                                                                </button>
+                                                            </div>
+                                                            
+                                                            <!-- Detalles del reporte -->
+                                                            <div class="report-details" id="detalles_<?= $reporte['id_reporte'] ?>">
+                                                                <p><span class="detail-label">Descripción:</span> <?= esc($reporte['descripcion']) ?></p>
+                                                                <p><span class="detail-label">Reportador:</span> <?= esc($reporte['nombre_reportador']) ?></p>
+                                                                <p><span class="detail-label">Email:</span> <?= esc($reporte['email_reportador']) ?></p>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
     </main>
 
     <!-- JS Bootstrap -->
@@ -317,66 +491,74 @@
         // Mostrar/ocultar detalles
         function toggleDetalles(id) {
             const detalles = document.getElementById('detalles_' + id);
-            if (detalles.style.display === 'none' || detalles.style.display === '') {
-                detalles.style.display = 'block';
+            detalles.style.display = detalles.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Mostrar/ocultar grupo de experiencias
+        function toggleGroup(id) {
+            const group = document.getElementById(id);
+            group.style.display = group.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Banear experiencia
+        function banExperience(id, nombre) {
+    if (confirm(`¿Estás seguro de banear la experiencia "${nombre}"? Esto la ocultará de la plataforma.`)) {
+        fetch('<?= base_url('admin/ban_experiencia') ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `id_experiencia=${id}&razon=Baneado por múltiples reportes`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                alert(`La experiencia "${nombre}" ha sido baneada`);
+                location.reload();
             } else {
-                detalles.style.display = 'none';
+                alert('Error: ' + data.message);
             }
-        }
-
-        // Evaluar reporte con confirmación
-        function evaluarReporte(id, accion) {
-            const mensaje = accion === 'Justificado' 
-                ? '¿Estás seguro de marcar este reporte como justificado?'
-                : '¿Estás seguro de rechazar este reporte?';
-            
-            if (confirm(mensaje)) {
-                window.location.href = /admin/evaluar_reporte/${id}/${accion};
-            }
-        }
-
-        // Mostrar todos los detalles al cargar si hay parámetros
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('detalle')) {
-                const id = urlParams.get('detalle');
-                const detalles = document.getElementById('detalles_' + id);
-                if (detalles) {
-                    detalles.style.display = 'block';
-                    detalles.scrollIntoView({ behavior: 'smooth' });
-                }
-            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ocurrió un error al banear la experiencia');
         });
+    }
+}
 
 
-        function evaluarReporte(id, estado) {
-            fetch('<?= base_url('admin/evaluar_reporte') ?>', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-Requested-With': 'XMLHttpRequest' // importante para detectar AJAX en CodeIgniter
-                },
-                body: new URLSearchParams({
-                    id_reporte: id,
-                    estado: estado
+        // Banear usuario
+        function banUser(id, nombre) {
+            if (confirm(`¿Estás seguro de banear al usuario "${nombre}"? Esto restringirá su acceso a la plataforma.`)) {
+                fetch('<?= base_url('admin/ban_usuario') ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `id_usuario=${id}&razon=Baneado por múltiples reportes`
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'ok') {
-                    alert('Reporte actualizado correctamente');
-                    // Puedes eliminar la fila o actualizar la tabla aquí:
-                    document.querySelector(`#fila-${id}`).remove();
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`El usuario "${nombre}" ha sido baneado`);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ocurrió un error al banear al usuario');
+                });
+            }
         }
 
-
+        // Inicialización - cerrar todos los grupos al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.reports-container').forEach(container => {
+                container.style.display = 'none';
+            });
+        });
     </script>
 </body>
 </html>

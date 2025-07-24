@@ -1,0 +1,22 @@
+[33m25201f7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Resolví conflictos en Turista.php y completé el merge
+[33mb54ba43[m Mejore los modales de reserva y pago, para que eviten errores.
+[33m028decf[m  solucione el error que se daba como comunidad en gestionar experiencias, cuando modifique el recuperar reservas que se cancelaban como turista
+[33m6a8974c[m Añadi al formulario, para que pida el numero de cupos
+[33mcb13140[m Agregue para que ahora al cancelar reserva, se recueperen estos cupos de reserva,y los vuelva a añadir a la experiencia como disponibles
+[33m4316190[m Mejore la parte de ver las reservas como comunidad, le di una interfaz más atractiva, y tambien poder poner manualmente la opcion de poner completado, cuando el turista culmina con la experiencia, para que esta pueda dejar su valoración
+[33mfcadaf0[m Agregue la vista de estadisticas para administrador
+[33ma5635f8[m Implemente las Estadisticas(para administrador), lo cual muestra cantidad de usuarios registrados, experiencias aprobadas, reservas y abajo una grafica de reservas por día
+[33m5dbc8dc[m git commit --no-edit Merge branch 'main' of https://github.com/AddFran/sumap_viajes
+[33m35bb574[m Completar lógica de cupos dinámicos en experiencias: ahora se guarda y muestra el valor correcto de cupos según lo ingresado por el usuario.
+[33me9488df[m agrege los cupos que pueden los turistas de una experiencia
+[33me2e8c7b[m Merge branch 'main' of https://github.com/AddFran/sumap_viajes
+[33m4e89513[m Agregue el buscador en Gestionar usuarios(como administrador) para facilitar la busqueda cuando hay muchos datos
+[33m370a03d[m Implementación de vista de reservas para la comunidad: permite a los usuarios ver las reservas realizadas en sus experiencias. Se agregó comunidad_reservas.php y se actualizaron rutas, controlador y menú de comunidad.
+[33m1e68a8e[m[33m ([m[1;31morigin/master[m[33m)[m El sistema ahora controla las reservas y actualiza los cupos disponibles dinámicamente, permitiendo que los turistas vean cuántos cupos quedan antes de reservar
+[33m16d63a3[m Daniel: agregué mejoras al diseño de la página principal
+[33m3a10d53[m Agregué un buscador por nombre para que los turistas puedan encontrar experiencias más fácilmente. En la sección de detalles, ahora al tocar una imagen de la galería se abre un modal que la muestra en tamaño más grande, para que sea más cómodo verla. También añadí la parte de valoraciones: se muestra el promedio con estrellas visuales, y debajo aparecen las opiniones individuales, con sus respectivas estrellas (de 1 a 5) y los comentarios que dejó cada usuario
+[33m5ecd8dc[m Organizacé las vistas y corregí el error del gestor de reservas(como turista)
+[33m3418fc9[m Update README.md
+[33mcda1dbb[m Create README.md
+[33m4a2511a[m Configuracion para guardar la DB en la carpeta
+[33m47af891[m Proyecto base

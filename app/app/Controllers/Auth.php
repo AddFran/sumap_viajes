@@ -42,6 +42,8 @@ class Auth extends BaseController
                     return redirect()->to('/comunidad/menu');
                 case 'Turista':
                     return redirect()->to('/turista/menu');
+                case 'Suspendido':
+                    return redirect()->to('/suspendido');
             }
         }
 
