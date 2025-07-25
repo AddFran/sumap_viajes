@@ -104,12 +104,9 @@ class KMeans
 
     public function fit(array $data)
     {
-        if (empty($data)) {
+        if (empty($data) || !$this->k) {
             return;
         }
-
-        // Determine optimal k using elbow method
-        $this->determineOptimalK($data);
 
         // Initialize centroids randomly from data points
         $this->centroids = $this->initializeCentroids($data);
@@ -117,8 +114,15 @@ class KMeans
         for ($i = 0; $i < $this->maxIterations; $i++) {
             // Assign clusters
             $this->clusters = $this->assignClusters($data);
-
-
+            // Recalculate centroids
+            $newCentroids = $this->calculateCentroids($data, $this->clusters);
+            if ($this->hasConverged($this->centroids, $newCentroids)) {
+                break;
+            }
+            $this->centroids = $newCentroids;
+        }
+    }
+    
     public function getClusters()
     {
         return $this->clusters;
@@ -205,4 +209,4 @@ class KMeans
         return sqrt($sum);
     }
 
-+
+}

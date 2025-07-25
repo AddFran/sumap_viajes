@@ -7,7 +7,8 @@ use App\Models\UsuarioModel;
 use App\Models\ReservaModel;
 use App\Models\CategoriaReporteModel;
 use CodeIgniter\Controller;
-use App\Libraries\KMeans;
+use Rubix\ML\Clusterers\KMeans;
+use Rubix\ML\Datasets\Unlabeled;
 
 class AdministradorController extends Controller
 {
@@ -306,7 +307,6 @@ class AdministradorController extends Controller
         // Obtener datos de usuarios para clustering
         $usuarios = $this->usuarioModel->findAll();
 
-        // Preparar datos para k-means con características adicionales
         $tipoCuentaMap = [
             'Admin' => 0,
             'Comunidad' => 1,
@@ -320,13 +320,11 @@ class AdministradorController extends Controller
             $tieneFoto = !empty($usuario['foto_perfil']) ? 1 : 0;
             $estaSuspendido = !empty($usuario['motivo_suspension']) ? 1 : 0;
 
-            // Extraer dominio del correo
             $dominioCorreo = 'otro';
             if (strpos($usuario['correo'], '@') !== false) {
                 $dominioCorreo = substr(strrchr($usuario['correo'], "@"), 1);
             }
 
-            // Mapear dominio a número (ejemplo simple, se pueden agregar más dominios)
             $dominioMap = [
                 'gmail.com' => 0,
                 'yahoo.com' => 1,
@@ -344,10 +342,12 @@ class AdministradorController extends Controller
             ];
         }
 
-        // Ejecutar k-means
-        $kmeans = new KMeans(3);
-        $kmeans->fit($dataPoints);
-        $clusters = $kmeans->getClusters();
+        // ---- Usar Rubix ML para clustering ----
+        $dataset = Unlabeled::build($dataPoints);
+        $clusterer = new KMeans(3);  // Puedes usar cualquier valor de K
+
+        $clusterer->train($dataset);
+        $clusters = $clusterer->predict($dataset);
 
         // Contar elementos por cluster
         $clusterCounts = array_count_values($clusters);
@@ -360,7 +360,6 @@ class AdministradorController extends Controller
         $data['numClusters'] = 3;
         $data['reservasPorDia'] = $reservasPorDia;
 
-        // Pasar los datos a la vista
         return view('administrador/ver_estadisticas', $data);
     }
 
