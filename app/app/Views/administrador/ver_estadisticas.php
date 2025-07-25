@@ -235,6 +235,19 @@
         </div>
     </main>
 
+    <section class="admin-content" style="margin-top: 40px; max-width: 1200px; margin-left: auto; margin-right: auto; color: var(--text-light); font-family: 'Roboto', sans-serif;">
+        <h2>Información sobre el algoritmo k-means</h2>
+        <p>El algoritmo k-means se ejecutó usando las siguientes características de los usuarios:</p>
+        <ul>
+            <li><strong>Tipo de cuenta:</strong> Codificado numéricamente (Admin=0, Comunidad=1, Turista=2, Suspendido=3)</li>
+            <li><strong>Longitud del nombre:</strong> Número de caracteres en el nombre del usuario</li>
+            <li><strong>Foto de perfil:</strong> Indicador binario (1 si tiene foto, 0 si no)</li>
+            <li><strong>Estado de suspensión:</strong> Indicador binario (1 si está suspendido, 0 si no)</li>
+            <li><strong>Dominio del correo electrónico:</strong> Codificado numéricamente para dominios comunes (gmail.com=0, yahoo.com=1, hotmail.com=2, otro=3)</li>
+        </ul>
+        <p>Los resultados de los clusters representan grupos de usuarios con características similares según estas variables. Esto puede ayudar a entender la composición de los usuarios y a tomar decisiones informadas para personalizar servicios o campañas.</p>
+    </section>
+
     <!-- JS Bootstrap y Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
