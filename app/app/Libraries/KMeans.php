@@ -14,6 +14,92 @@ class KMeans
         $this->maxIterations = $maxIterations;
         $this->centroids = [];
         $this->clusters = [];
+        $this->optimalK = null;
+        $this->sseValues = [];
+    }
+
+    /**
+     * Ejecuta el método del codo para determinar el k óptimo y lo asigna a $this->optimalK.
+     */
+    public function determineOptimalK(array $data, int $maxK = 10)
+    {
+        $this->sseValues = $this->elbowMethod($data, $maxK);
+        // Aquí podrías implementar lógica para seleccionar automáticamente el k óptimo basado en la curva SSE.
+        // Por simplicidad, asignamos el k con la mayor caída relativa en SSE.
+        $this->optimalK = $this->findElbowPoint($this->sseValues);
+        $this->k = $this->optimalK;
+    }
+
+    /**
+     * Retorna el k óptimo determinado.
+     */
+    public function getOptimalK()
+    {
+        return $this->optimalK;
+    }
+
+    /**
+     * Retorna los valores SSE calculados para cada k.
+     */
+    public function getSSEValues()
+    {
+        return $this->sseValues;
+    }
+
+    /**
+     * Encuentra el punto del codo en la curva SSE.
+     * Implementación simple que busca la mayor caída relativa.
+     */
+    private function findElbowPoint(array $sseValues)
+    {
+        $maxDrop = 0;
+        $elbowK = 1;
+        $prevSSE = null;
+        foreach ($sseValues as $k => $sse) {
+            if ($prevSSE !== null) {
+                $drop = $prevSSE - $sse;
+                if ($drop > $maxDrop) {
+                    $maxDrop = $drop;
+                    $elbowK = $k;
+                }
+            }
+            $prevSSE = $sse;
+        }
+        return $elbowK;
+    }
+
+    /**
+     * Método del codo para encontrar el k óptimo.
+     * Ejecuta k-means para valores de k desde 1 hasta maxK y calcula la suma de errores cuadráticos (SSE).
+     * Retorna un array con los valores de SSE para cada k.
+     */
+    public function elbowMethod(array $data, int $maxK = 10): array
+    {
+        $sseValues = [];
+
+        for ($k = 1; $k <= $maxK; $k++) {
+            $this->k = $k;
+            $this->fit($data);
+            $sse = $this->calculateSSE($data);
+            $sseValues[$k] = $sse;
+        }
+
+        return $sseValues;
+    }
+
+    /**
+     * Calcula la suma de errores cuadráticos (SSE) para los clusters actuales.
+     */
+    private function calculateSSE(array $data): float
+    {
+        $sse = 0.0;
+        foreach ($data as $index => $point) {
+            $clusterIndex = $this->clusters[$index];
+            $centroid = $this->centroids[$clusterIndex];
+            $distance = $this->euclideanDistance($point, $centroid);
+            $sse += $distance * $distance;
+        }
+        return $sse;
     }
 
     public function fit(array $data)
