@@ -111,6 +111,7 @@ class KMeans
         // Initialize centroids randomly from data points
         $this->centroids = $this->initializeCentroids($data);
 
+<<<<<<< HEAD
         for ($i = 0; $i < $this->maxIterations; $i++) {
             // Assign clusters
             $this->clusters = $this->assignClusters($data);
@@ -123,6 +124,9 @@ class KMeans
         }
     }
     
+=======
+    }
+>>>>>>> de13f3f (Corrección en KMeans.php para completar el método fit y asegurar la funcionalidad correcta)
     public function getClusters()
     {
         return $this->clusters;
@@ -208,5 +212,9 @@ class KMeans
         }
         return sqrt($sum);
     }
+<<<<<<< HEAD
 
 }
+=======
+}
+>>>>>>> de13f3f (Corrección en KMeans.php para completar el método fit y asegurar la funcionalidad correcta)
