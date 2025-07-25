@@ -257,35 +257,44 @@
 
         // Gráfico de Clusters
         const ctxClusters = document.getElementById('clustersChart').getContext('2d');
+
+        // Preparar datos para scatter plot
+        const scatterDataPoints = [
+            <?php for ($i = 0; $i < $numClusters; $i++): ?>
+                { x: <?= $i + 1 ?>, y: <?= isset($clusterCounts[$i]) ? $clusterCounts[$i] : 0 ?> },
+            <?php endfor; ?>
+        ];
+
+        // Colores para los clusters
+        const clusterColors = [
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 159, 64, 0.6)'
+        ];
+
+        // Preparar datasets por cluster con colores distintos
+        const datasets = [];
+        <?php for ($i = 0; $i < $numClusters; $i++): ?>
+            datasets.push({
+                label: 'Cluster <?= $i + 1 ?>',
+                data: [{ x: <?= $i + 1 ?>, y: <?= isset($clusterCounts[$i]) ? $clusterCounts[$i] : 0 ?> }],
+                backgroundColor: clusterColors[<?= $i ?> % clusterColors.length],
+                borderColor: clusterColors[<?= $i ?> % clusterColors.length].replace('0.6', '1'),
+                pointRadius: 8,
+                pointHoverRadius: 10,
+                showLine: false
+            });
+        <?php endfor; ?>
+
         const clustersData = {
-            labels: [
-                <?php for ($i = 0; $i < $numClusters; $i++): ?>
-                    'Cluster <?= $i + 1 ?>',
-                <?php endfor; ?>
-            ],
-            datasets: [{
-                label: 'Número de elementos',
-                data: [
-                    <?php for ($i = 0; $i < $numClusters; $i++): ?>
-                        <?= isset($clusterCounts[$i]) ? $clusterCounts[$i] : 0 ?>,
-                    <?php endfor; ?>
-                ],
-                backgroundColor: [
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)',
-                    'rgba(75, 192, 192, 0.6)'
-                ],
-                borderColor: [
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)'
-                ],
-                borderWidth: 1
-            }]
+            datasets: datasets
         };
 
         const clustersChart = new Chart(ctxClusters, {
-            type: 'bar',
+            type: 'scatter',
             data: clustersData,
             options: {
                 responsive: true,
@@ -298,11 +307,27 @@
                         },
                         grid: {
                             color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Número de elementos'
                         }
                     },
                     x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        ticks: {
+                            stepSize: 1,
+                            callback: function(value) {
+                                return 'Cluster ' + value;
+                            }
+                        },
                         grid: {
                             display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Clusters'
                         }
                     }
                 }
