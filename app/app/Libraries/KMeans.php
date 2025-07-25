@@ -8,9 +8,9 @@ class KMeans
     private $centroids;
     private $clusters;
 
-    public function __construct(int $k = 3, int $maxIterations = 100)
+    public function __construct(int $maxIterations = 100)
     {
-        $this->k = $k;
+        $this->k = null;
         $this->maxIterations = $maxIterations;
         $this->centroids = [];
         $this->clusters = [];
@@ -107,6 +107,9 @@ class KMeans
         if (empty($data)) {
             return;
         }
+
+        // Determine optimo usando el metodo del codo
+        $this->determineOptimalK($data);
 
         // Initialize centroids randomly from data points
         $this->centroids = $this->initializeCentroids($data);
