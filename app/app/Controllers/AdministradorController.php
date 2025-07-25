@@ -7,6 +7,7 @@ use App\Models\UsuarioModel;
 use App\Models\ReservaModel;
 use App\Models\CategoriaReporteModel;
 use CodeIgniter\Controller;
+use App\Libraries\KMeans;
 
 class AdministradorController extends Controller
 {
@@ -290,6 +291,8 @@ class AdministradorController extends Controller
     }
 
     // Ver estadísticas
+   
+
     public function ver_estadisticas()
     {
         // Verificar si el usuario está autenticado y es un administrador
@@ -297,13 +300,38 @@ class AdministradorController extends Controller
             return redirect()->to('/login');
         }
 
-        // Obtener estadísticas generales
-        $data['usuariosRegistrados'] = $this->usuarioModel->countAll(); // Total de usuarios
-        $data['experienciasAprobadas'] = $this->experienciaModel->where('estado', 'Aprobada')->countAllResults(); // Total de experiencias aprobadas
-        $data['reservasRealizadas'] = $this->reservaModel->countAll(); // Total de reservas realizadas
+        // Obtener datos de usuarios para clustering
+        $usuarios = $this->usuarioModel->findAll();
 
-        // Estadísticas diarias (por ejemplo, reservas por día)
-        $data['reservasPorDia'] = $this->getReservasPorDia();
+        // Preparar datos para k-means (ejemplo: codificar tipo_cuenta como numérico)
+        $tipoCuentaMap = [
+            'Admin' => 0,
+            'Comunidad' => 1,
+            'Turista' => 2,
+            'Suspendido' => 3
+        ];
+
+        $dataPoints = [];
+        foreach ($usuarios as $usuario) {
+            $tipoCuentaNum = isset($tipoCuentaMap[$usuario['tipo_cuenta']]) ? $tipoCuentaMap[$usuario['tipo_cuenta']] : 4;
+            // Ejemplo: usar tipo_cuenta numérico y longitud del nombre como características
+            $dataPoints[] = [
+                $tipoCuentaNum,
+                strlen($usuario['nombre'])
+            ];
+        }
+
+        // Ejecutar k-means
+        $kmeans = new KMeans(3);
+        $kmeans->fit($dataPoints);
+        $clusters = $kmeans->getClusters();
+
+        // Contar elementos por cluster
+        $clusterCounts = array_count_values($clusters);
+
+        // Preparar datos para la vista
+        $data['clusterCounts'] = $clusterCounts;
+        $data['numClusters'] = 3;
 
         // Pasar los datos a la vista
         return view('administrador/ver_estadisticas', $data);

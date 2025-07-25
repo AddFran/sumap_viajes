@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estadísticas de la Plataforma</title>
+    <title>KMeans</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -207,38 +207,30 @@
 
     <!-- Contenido principal -->
     <main class="admin-content">
-        <h1 class="admin-title">Estadísticas de la Plataforma</h1>
+        <h1 class="admin-title">Uso del algoritmo KMeans</h1>
 
         <div class="stats-cards">
-            <!-- Total de Usuarios Registrados -->
-            <div class="stats-card">
-                <h3><?= $usuariosRegistrados ?></h3>
-                <p>Usuarios Registrados</p>
-                <span class="badge bg-primary">Total</span>
-            </div>
-
-            <!-- Total de Experiencias Aprobadas -->
-            <div class="stats-card">
-                <h3><?= $experienciasAprobadas ?></h3>
-                <p>Experiencias Aprobadas</p>
-                <span class="badge bg-success">Aprobadas</span>
-            </div>
-
-            <!-- Total de Reservas Realizadas -->
-            <div class="stats-card">
-                <h3><?= $reservasRealizadas ?></h3>
-                <p>Reservas Realizadas</p>
-                <span class="badge bg-warning">Total</span>
-            </div>
+            <!-- Mostrar resumen de clusters -->
+            <?php if (isset($clusterCounts) && isset($numClusters)): ?>
+                <?php for ($i = 0; $i < $numClusters; $i++): ?>
+                    <div class="stats-card">
+                        <h3><?= isset($clusterCounts[$i]) ? $clusterCounts[$i] : 0 ?></h3>
+                        <p>Elementos en Cluster <?= $i + 1 ?></p>
+                        <span class="badge bg-primary">Cluster <?= $i + 1 ?></span>
+                    </div>
+                <?php endfor; ?>
+            <?php else: ?>
+                <p>No hay datos de clusters disponibles.</p>
+            <?php endif; ?>
         </div>
 
-        <!-- Gráfico de Reservas por Día -->
+        <!-- Gráfico de Clusters -->
         <div class="chart-section">
             <div class="chart-header">
-                <h3 class="chart-title">Tendencia de Reservas</h3>
+                <h3 class="chart-title">Distribución de Clusters</h3>
             </div>
             <div class="chart-container">
-                <canvas id="reservasDiaChart"></canvas>
+                <canvas id="clustersChart"></canvas>
             </div>
         </div>
     </main>
@@ -250,33 +242,47 @@
         Chart.defaults.font.family = "'Roboto', sans-serif";
         Chart.defaults.color = '#666';
 
-        // Gráfico de Reservas por Día
-        const ctxDia = document.getElementById('reservasDiaChart').getContext('2d');
-        const reservasDiaChart = new Chart(ctxDia, {
-            type: 'line',
-            data: {
-                labels: <?= json_encode(array_column($reservasPorDia, 'fecha')) ?>,
-                datasets: [{
-                    label: 'Reservas por Día',
-                    data: <?= json_encode(array_column($reservasPorDia, 'total')) ?>,
-                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                    borderColor: 'rgba(40, 167, 69, 1)',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true
-                }]
-            },
+        // Gráfico de Clusters
+        const ctxClusters = document.getElementById('clustersChart').getContext('2d');
+        const clustersData = {
+            labels: [
+                <?php for ($i = 0; $i < $numClusters; $i++): ?>
+                    'Cluster <?= $i + 1 ?>',
+                <?php endfor; ?>
+            ],
+            datasets: [{
+                label: 'Número de elementos',
+                data: [
+                    <?php for ($i = 0; $i < $numClusters; $i++): ?>
+                        <?= isset($clusterCounts[$i]) ? $clusterCounts[$i] : 0 ?>,
+                    <?php endfor; ?>
+                ],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        const clustersChart = new Chart(ctxClusters, {
+            type: 'bar',
+            data: clustersData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
                 scales: {
                     y: {
                         beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        },
                         grid: {
                             color: 'rgba(0, 0, 0, 0.05)'
                         }
