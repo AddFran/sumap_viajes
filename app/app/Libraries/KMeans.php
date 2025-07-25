@@ -108,7 +108,7 @@ class KMeans
             return;
         }
 
-        // Determine optimo usando el metodo del codo
+        // Determine optimal k using elbow method
         $this->determineOptimalK($data);
 
         // Initialize centroids randomly from data points
@@ -118,17 +118,6 @@ class KMeans
             // Assign clusters
             $this->clusters = $this->assignClusters($data);
 
-            // Calculate new centroids
-            $newCentroids = $this->calculateCentroids($data, $this->clusters);
-
-            // Check for convergence
-            if ($this->hasConverged($this->centroids, $newCentroids)) {
-                break;
-            }
-
-            $this->centroids = $newCentroids;
-        }
-    }
 
     public function getClusters()
     {
@@ -215,4 +204,5 @@ class KMeans
         }
         return sqrt($sum);
     }
-}
+
++
