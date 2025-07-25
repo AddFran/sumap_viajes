@@ -375,5 +375,62 @@ class AdministradorController extends Controller
         return $builder->get()->getResultArray();
     }
 
+    public function apriori()
+    {
+        if (!session()->get('logged_in') || session()->get('tipo_cuenta') != 'Admin') {
+            return redirect()->to('/login'); // Redirigir al login si no es administrador
+        }
+        helper(['filesystem']);
+
+        $model = new ReservaModel();
+        $transacciones = $model->obtenerTransacciones();
+
+        // Estructura para enviar a Python como JSON
+        $inputData = json_encode(['transacciones' => $transacciones]);
+
+        // Ruta al script Python con entorno virtual activado
+        $pythonCmd = '/opt/venv/bin/python /var/www/html/python/apriori.py';
+
+        // Ejecutar el script con entrada JSON vía stdin
+        $descriptores = [
+            0 => ['pipe', 'r'],  // STDIN
+            1 => ['pipe', 'w'],  // STDOUT
+            2 => ['pipe', 'w'],  // STDERR
+        ];
+
+        $proceso = proc_open($pythonCmd, $descriptores, $pipes);
+
+        if (is_resource($proceso)) {
+            fwrite($pipes[0], $inputData);
+            fclose($pipes[0]);
+
+            $salida = stream_get_contents($pipes[1]);
+            fclose($pipes[1]);
+
+            $errores = stream_get_contents($pipes[2]);
+            fclose($pipes[2]);
+
+            $exitCode = proc_close($proceso);
+
+            if ($exitCode === 0) {
+                $reglas = json_decode($salida, true);
+                return view('administrador/apriori_result', [
+                    'reglas' => $reglas,
+                    'errores' => null
+                ]);
+            } else {
+                return view('administrador/apriori_result', [
+                    'reglas' => [],
+                    'errores' => $errores ?: 'Error al ejecutar el script.'
+                ]);
+            }
+        } else {
+            return view('administrador/apriori_result', [
+                'reglas' => [],
+                'errores' => 'No se pudo iniciar el proceso de Python.'
+            ]);
+        }
+    }
+
 }
 

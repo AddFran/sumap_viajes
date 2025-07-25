@@ -239,6 +239,13 @@
                 <p class="option-desc">Agrupar a los usuarios en clusters basados en ciertas características.</p>
             </a>
             
+            <a href="<?= site_url('/admin/apriori') ?>" class="option-card">
+                <div class="option-icon">
+                    <i class="bi bi-diagram-3"></i>
+                </div>
+                <h3 class="option-title">Reglas de Asociación</h3>
+                <p class="option-desc">Explora qué experiencias suelen reservarse juntas con Apriori</p>
+            </a>
         </div>
     </main>
 

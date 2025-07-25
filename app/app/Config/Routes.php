@@ -90,4 +90,7 @@ $routes->post('admin/actualizar_usuario', 'AdministradorController::actualizar_u
 $routes->post('admin/eliminar_usuario/(:num)', 'AdministradorController::eliminar_usuario/$1');  // Eliminar usuario
 
 $routes->get('/admin/estadisticas', 'AdministradorController::ver_estadisticas');
+$routes->get('/admin/apriori', 'AdministradorController::apriori');
+$routes->get('apriori', 'Apriori::index');
+
 

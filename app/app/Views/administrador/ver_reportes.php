@@ -527,32 +527,6 @@
 }
 
 
-        // Banear usuario
-        function banUser(id, nombre) {
-            if (confirm(`¿Estás seguro de banear al usuario "${nombre}"? Esto restringirá su acceso a la plataforma.`)) {
-                fetch('<?= base_url('admin/ban_usuario') ?>', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `id_usuario=${id}&razon=Baneado por múltiples reportes`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(`El usuario "${nombre}" ha sido baneado`);
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Ocurrió un error al banear al usuario');
-                });
-            }
-        }
-
         // Inicialización - cerrar todos los grupos al cargar
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.reports-container').forEach(container => {
