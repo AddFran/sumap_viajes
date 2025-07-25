@@ -235,8 +235,8 @@
                 <div class="option-icon">
                     <i class="bi bi-graph-up"></i>
                 </div>
-                <h3 class="option-title">Estadísticas</h3>
-                <p class="option-desc">Visualiza métricas y datos importantes de la plataforma</p>
+                <h3 class="option-title">KMeans</h3>
+                <p class="option-desc">Agrupar a los usuarios en clusters basados en ciertas características.</p>
             </a>
             
         </div>
