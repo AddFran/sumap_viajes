@@ -303,7 +303,7 @@ class AdministradorController extends Controller
         // Obtener datos de usuarios para clustering
         $usuarios = $this->usuarioModel->findAll();
 
-        // Preparar datos para k-means (ejemplo: codificar tipo_cuenta como numérico)
+        // Preparar datos para k-means con características adicionales
         $tipoCuentaMap = [
             'Admin' => 0,
             'Comunidad' => 1,
@@ -314,10 +314,30 @@ class AdministradorController extends Controller
         $dataPoints = [];
         foreach ($usuarios as $usuario) {
             $tipoCuentaNum = isset($tipoCuentaMap[$usuario['tipo_cuenta']]) ? $tipoCuentaMap[$usuario['tipo_cuenta']] : 4;
-            // Ejemplo: usar tipo_cuenta numérico y longitud del nombre como características
+            $tieneFoto = !empty($usuario['foto_perfil']) ? 1 : 0;
+            $estaSuspendido = !empty($usuario['motivo_suspension']) ? 1 : 0;
+
+            // Extraer dominio del correo
+            $dominioCorreo = 'otro';
+            if (strpos($usuario['correo'], '@') !== false) {
+                $dominioCorreo = substr(strrchr($usuario['correo'], "@"), 1);
+            }
+
+            // Mapear dominio a número (ejemplo simple, se pueden agregar más dominios)
+            $dominioMap = [
+                'gmail.com' => 0,
+                'yahoo.com' => 1,
+                'hotmail.com' => 2,
+                'otro' => 3
+            ];
+            $dominioNum = isset($dominioMap[$dominioCorreo]) ? $dominioMap[$dominioCorreo] : 3;
+
             $dataPoints[] = [
                 $tipoCuentaNum,
-                strlen($usuario['nombre'])
+                strlen($usuario['nombre']),
+                $tieneFoto,
+                $estaSuspendido,
+                $dominioNum
             ];
         }
 
@@ -329,9 +349,13 @@ class AdministradorController extends Controller
         // Contar elementos por cluster
         $clusterCounts = array_count_values($clusters);
 
+        // Obtener datos de reservas por día
+        $reservasPorDia = $this->getReservasPorDia();
+
         // Preparar datos para la vista
         $data['clusterCounts'] = $clusterCounts;
         $data['numClusters'] = 3;
+        $data['reservasPorDia'] = $reservasPorDia;
 
         // Pasar los datos a la vista
         return view('administrador/ver_estadisticas', $data);
